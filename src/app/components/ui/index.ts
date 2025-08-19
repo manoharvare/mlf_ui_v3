@@ -139,3 +139,31 @@ export {
   type SkeletonVariant,
   type SkeletonAnimation 
 } from './skeleton.component';
+
+// Date Picker Component
+export { 
+  DatePickerComponent,
+  type DatePickerSize 
+} from './date-picker.component';
+
+// File Upload Component
+export { 
+  FileUploadComponent,
+  type UploadedFile,
+  type FileUploadVariant,
+  type FileUploadSize 
+} from './file-upload.component';
+
+// Search Component
+export { 
+  SearchComponent,
+  type SearchResult,
+  type SearchSize 
+} from './search.component';
+
+// Slider Component
+export { 
+  SliderComponent,
+  type SliderSize,
+  type SliderOrientation 
+} from './slider.component';

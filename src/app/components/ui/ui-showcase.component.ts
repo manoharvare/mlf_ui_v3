@@ -35,7 +35,10 @@ import {
   Navigation,
   Loader,
   Eye,
-  ChevronRight
+  ChevronRight,
+  Calendar,
+  Upload,
+  Settings
 } from 'lucide-angular';
 import { 
   ButtonComponent, 
@@ -70,6 +73,10 @@ import {
   SkeletonCardComponent,
   SkeletonTableComponent,
   SkeletonListComponent,
+  DatePickerComponent,
+  FileUploadComponent,
+  SearchComponent,
+  SliderComponent,
   type SelectOption,
   type RadioOption,
   type ToastData,
@@ -78,7 +85,9 @@ import {
   type DropdownItem,
   type TableColumn,
   type TableAction,
-  type BreadcrumbItem
+  type BreadcrumbItem,
+  type SearchResult,
+  type UploadedFile
 } from './index';
 
 @Component({
@@ -119,7 +128,11 @@ import {
     SkeletonComponent,
     SkeletonCardComponent,
     SkeletonTableComponent,
-    SkeletonListComponent
+    SkeletonListComponent,
+    DatePickerComponent,
+    FileUploadComponent,
+    SearchComponent,
+    SliderComponent
   ],
   template: `
     <div class="p-8 space-y-8 bg-background min-h-screen">
@@ -800,6 +813,146 @@ import {
           </ui-card-content>
         </ui-card>
 
+        <!-- Date Picker Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Calendar">Date Picker</ui-card-title>
+            <ui-card-description>Date selection components</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Sizes</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <ui-date-picker label="Small" size="sm" [(ngModel)]="dateDemo.small"></ui-date-picker>
+                  <ui-date-picker label="Medium" size="md" [(ngModel)]="dateDemo.medium"></ui-date-picker>
+                  <ui-date-picker label="Large" size="lg" [(ngModel)]="dateDemo.large"></ui-date-picker>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">With Constraints</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ui-date-picker 
+                    label="Start Date" 
+                    [max]="dateDemo.endDate"
+                    [(ngModel)]="dateDemo.startDate">
+                  </ui-date-picker>
+                  <ui-date-picker 
+                    label="End Date" 
+                    [min]="dateDemo.startDate"
+                    [(ngModel)]="dateDemo.endDate">
+                  </ui-date-picker>
+                </div>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- File Upload Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Upload">File Upload</ui-card-title>
+            <ui-card-description>File upload components with different variants</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Dropzone Variant</h4>
+                <ui-file-upload
+                  label="Upload Documents"
+                  variant="dropzone"
+                  [multiple]="true"
+                  accept=".pdf,.doc,.docx,.txt"
+                  [maxSize]="5242880"
+                  (filesSelected)="onFilesSelected($event)">
+                </ui-file-upload>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Button Variant</h4>
+                <ui-file-upload
+                  label="Upload Images"
+                  variant="button"
+                  [multiple]="true"
+                  accept="image/*"
+                  buttonText="Choose Images"
+                  (filesSelected)="onFilesSelected($event)">
+                </ui-file-upload>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Search Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Search">Search</ui-card-title>
+            <ui-card-description>Search components with autocomplete</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Basic Search</h4>
+                <ui-search
+                  placeholder="Search users..."
+                  [results]="searchResults"
+                  (searchChange)="onSearchChange($event)"
+                  (resultSelected)="onSearchResultSelected($event)">
+                </ui-search>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Search Sizes</h4>
+                <div class="space-y-3">
+                  <ui-search size="sm" placeholder="Small search..."></ui-search>
+                  <ui-search size="md" placeholder="Medium search..."></ui-search>
+                  <ui-search size="lg" placeholder="Large search..."></ui-search>
+                </div>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Slider Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Settings">Slider</ui-card-title>
+            <ui-card-description>Range input sliders</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Basic Sliders</h4>
+                <div class="space-y-4">
+                  <ui-slider
+                    label="Volume"
+                    [min]="0"
+                    [max]="100"
+                    [step]="1"
+                    unit="%"
+                    [(ngModel)]="sliderDemo.volume">
+                  </ui-slider>
+                  <ui-slider
+                    label="Price Range"
+                    [min]="0"
+                    [max]="1000"
+                    [step]="10"
+                    unit="$"
+                    [showMinMax]="true"
+                    [(ngModel)]="sliderDemo.price">
+                  </ui-slider>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Slider Sizes</h4>
+                <div class="space-y-4">
+                  <ui-slider label="Small" size="sm" [(ngModel)]="sliderDemo.small"></ui-slider>
+                  <ui-slider label="Medium" size="md" [(ngModel)]="sliderDemo.medium"></ui-slider>
+                  <ui-slider label="Large" size="lg" [(ngModel)]="sliderDemo.large"></ui-slider>
+                </div>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
         <!-- Interactive Demo -->
         <ui-card>
           <ui-card-header>
@@ -934,6 +1087,9 @@ export class UiShowcaseComponent {
   Navigation = Navigation;
   Loader = Loader;
   ChevronRight = ChevronRight;
+  Calendar = Calendar;
+  Upload = Upload;
+  Settings = Settings;
 
   // Input values
   inputValue1 = '';
@@ -987,6 +1143,30 @@ export class UiShowcaseComponent {
   demoName = '';
   demoRole = '';
   demoMessage = '';
+  
+  // New component demo values
+  dateDemo = {
+    small: '',
+    medium: '',
+    large: '',
+    startDate: '',
+    endDate: ''
+  };
+  
+  sliderDemo = {
+    volume: 50,
+    price: 250,
+    small: 25,
+    medium: 50,
+    large: 75
+  };
+  
+  searchResults: SearchResult[] = [
+    { id: '1', title: 'John Doe', description: 'Software Engineer', category: 'Users' },
+    { id: '2', title: 'Jane Smith', description: 'Product Manager', category: 'Users' },
+    { id: '3', title: 'Bob Johnson', description: 'Designer', category: 'Users' },
+    { id: '4', title: 'Alice Brown', description: 'Data Analyst', category: 'Users' }
+  ];
   
   // Select options
   basicOptions: SelectOption[] = [
@@ -1148,15 +1328,15 @@ export class UiShowcaseComponent {
   }
   
   // Toast methods
-  showToast(variant: 'success' | 'info' | 'error' | 'warning'): void {
-    const toastMessages = {
+  showToast(variant: 'success' | 'info' | 'error' | 'warning', customMessage?: { title: string; description: string }): void {
+    const defaultMessages = {
       success: { title: 'Success!', description: 'Your action was completed successfully.' },
       info: { title: 'Information', description: 'Here is some useful information for you.' },
       error: { title: 'Error!', description: 'Something went wrong. Please try again.' },
       warning: { title: 'Warning!', description: 'Please review your input before proceeding.' }
     };
     
-    const message = toastMessages[variant];
+    const message = customMessage || defaultMessages[variant];
     const toast: ToastData = {
       id: `toast-${Date.now()}`,
       title: message.title,
@@ -1196,5 +1376,41 @@ export class UiShowcaseComponent {
   onPaginationChange(page: number): void {
     console.log('Pagination change:', page);
     this.paginationDemo.currentPage = page;
+  }
+  
+  // New component methods
+  onFilesSelected(files: UploadedFile[]): void {
+    console.log('Files selected:', files);
+    this.showToast('success', {
+      title: 'Files uploaded',
+      description: `${files.length} file(s) selected successfully`
+    });
+  }
+  
+  onSearchChange(query: string): void {
+    console.log('Search query:', query);
+    // In a real app, you would filter the results based on the query
+    // For demo purposes, we'll just show all results if there's a query
+    if (query.length > 0) {
+      this.searchResults = [
+        { id: '1', title: 'John Doe', description: 'Software Engineer', category: 'Users' },
+        { id: '2', title: 'Jane Smith', description: 'Product Manager', category: 'Users' },
+        { id: '3', title: 'Bob Johnson', description: 'Designer', category: 'Users' },
+        { id: '4', title: 'Alice Brown', description: 'Data Analyst', category: 'Users' }
+      ].filter(result => 
+        result.title.toLowerCase().includes(query.toLowerCase()) ||
+        result.description.toLowerCase().includes(query.toLowerCase())
+      );
+    } else {
+      this.searchResults = [];
+    }
+  }
+  
+  onSearchResultSelected(result: SearchResult): void {
+    console.log('Search result selected:', result);
+    this.showToast('info', {
+      title: 'User selected',
+      description: `Selected ${result.title} - ${result.description}`
+    });
   }
 }
