@@ -225,7 +225,7 @@ export class SkeletonTableComponent {
   template: `
     <div class="space-y-4">
       <div
-        *ngFor="let item of itemsArray"
+        *ngFor="let item of itemsArray; let i = index"
         class="flex items-center space-x-4"
       >
         <ui-skeleton
@@ -239,14 +239,14 @@ export class SkeletonTableComponent {
         <div class="flex-1 space-y-2">
           <ui-skeleton
             variant="text"
-            [width]="getTitleWidth()"
+            [width]="getTitleWidth(i)"
             height="16px"
             [animation]="animation"
           ></ui-skeleton>
           <ui-skeleton
             *ngIf="showSubtitle"
             variant="text"
-            [width]="getSubtitleWidth()"
+            [width]="getSubtitleWidth(i)"
             height="14px"
             [animation]="animation"
           ></ui-skeleton>
@@ -271,20 +271,37 @@ export class SkeletonListComponent {
   @Input() avatarSize = '40px';
   @Input() animation: SkeletonAnimation = 'pulse';
 
+  private titleWidths: string[] = [];
+  private subtitleWidths: string[] = [];
+
   get itemsArray(): number[] {
-    return Array.from({ length: this.items }, (_, i) => i);
+    const array = Array.from({ length: this.items }, (_, i) => i);
+    // Initialize widths arrays if needed
+    if (this.titleWidths.length !== this.items) {
+      this.initializeWidths();
+    }
+    return array;
   }
 
-  getTitleWidth(): string {
-    // Randomize title width for more realistic appearance
-    const widths = ['200px', '250px', '180px', '220px', '160px'];
-    return widths[Math.floor(Math.random() * widths.length)];
+  private initializeWidths(): void {
+    const titleOptions = ['200px', '250px', '180px', '220px', '160px'];
+    const subtitleOptions = ['150px', '180px', '120px', '160px', '140px'];
+    
+    this.titleWidths = Array.from({ length: this.items }, () => 
+      titleOptions[Math.floor(Math.random() * titleOptions.length)]
+    );
+    
+    this.subtitleWidths = Array.from({ length: this.items }, () => 
+      subtitleOptions[Math.floor(Math.random() * subtitleOptions.length)]
+    );
   }
 
-  getSubtitleWidth(): string {
-    // Randomize subtitle width for more realistic appearance
-    const widths = ['150px', '180px', '120px', '160px', '140px'];
-    return widths[Math.floor(Math.random() * widths.length)];
+  getTitleWidth(index: number): string {
+    return this.titleWidths[index] || '200px';
+  }
+
+  getSubtitleWidth(index: number): string {
+    return this.subtitleWidths[index] || '150px';
   }
 }
 
