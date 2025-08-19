@@ -7,6 +7,7 @@ export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'app', component: MlfApplicationComponent },
+  { path: 'dashboard', redirectTo: '/app', pathMatch: 'full' },
   { path: 'ui-showcase', component: UiShowcaseComponent },
   { path: '**', redirectTo: '/login' }
 ];

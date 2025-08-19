@@ -65,7 +65,7 @@ export class LoginComponent {
 
   onLogin(role: UserRole): void {
     this.userRoleService.setCurrentUserRole(role);
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/app']);
   }
 
   getIconForRole(roleId: string): any {

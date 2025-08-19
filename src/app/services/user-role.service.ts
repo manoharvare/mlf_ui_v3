@@ -129,8 +129,12 @@ export class UserRoleService {
     return this.availableRoles;
   }
 
-  setCurrentUserRole(role: UserRole) {
+  setCurrentUserRole(role: UserRole | null) {
     this.currentUserRole.set(role);
+  }
+  
+  clearCurrentUserRole() {
+    this.currentUserRole.set(null);
   }
 
   getPageConfig() {
