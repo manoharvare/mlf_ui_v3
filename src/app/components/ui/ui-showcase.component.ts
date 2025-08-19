@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { 
   LucideAngularModule,
   Plus,
@@ -77,6 +77,22 @@ import {
   FileUploadComponent,
   SearchComponent,
   SliderComponent,
+  TextareaComponent,
+  SeparatorComponent,
+  SeparatorWithTextComponent,
+  LabelComponent,
+  FieldLabelComponent,
+  PopoverComponent,
+  CommandComponent,
+  CommandDialogComponent,
+  CollapsibleComponent,
+  CollapsibleGroupComponent,
+  ToggleGroupComponent,
+  DialogComponent,
+  ConfirmationDialogComponent,
+  FormComponent,
+  FormFieldComponent,
+  CalendarComponent,
   type SelectOption,
   type RadioOption,
   type ToastData,
@@ -87,7 +103,32 @@ import {
   type TableAction,
   type BreadcrumbItem,
   type SearchResult,
-  type UploadedFile
+  type UploadedFile,
+  type TextareaSize,
+  type TextareaResize,
+  type SeparatorOrientation,
+  type SeparatorVariant,
+  type SeparatorSize,
+  type LabelSize,
+  type LabelVariant,
+  type PopoverPlacement,
+  type CommandItem,
+  type ToggleOption,
+  type PopoverTrigger,
+  type CommandGroup,
+  type CollapsibleSize,
+  type ToggleGroupSize,
+  type ToggleGroupVariant,
+  type ToggleGroupType,
+  type DialogSize,
+  type DialogType,
+  type ConfirmationConfig,
+  type FormFieldError,
+  type FormSize,
+  type FormLayout,
+  type CalendarMode,
+  type CalendarSize,
+  type CalendarDate
 } from './index';
 
 @Component({
@@ -96,6 +137,7 @@ import {
   imports: [
     CommonModule, 
     FormsModule,
+    ReactiveFormsModule,
     LucideAngularModule,
     ButtonComponent, 
     InputComponent, 
@@ -132,7 +174,23 @@ import {
     DatePickerComponent,
     FileUploadComponent,
     SearchComponent,
-    SliderComponent
+    SliderComponent,
+    TextareaComponent,
+    SeparatorComponent,
+    SeparatorWithTextComponent,
+    LabelComponent,
+    FieldLabelComponent,
+    PopoverComponent,
+    CommandComponent,
+    CommandDialogComponent,
+    CollapsibleComponent,
+    CollapsibleGroupComponent,
+    ToggleGroupComponent,
+    DialogComponent,
+    ConfirmationDialogComponent,
+    FormComponent,
+    FormFieldComponent,
+    CalendarComponent
   ],
   template: `
     <div class="p-8 space-y-8 bg-background min-h-screen">
@@ -1049,7 +1107,409 @@ import {
           <ui-button variant="destructive" (clicked)="confirmAction()">Delete</ui-button>
         </div>
       </ui-modal>
-    </div>
+
+        <!-- Textarea Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Type">Textarea</ui-card-title>
+            <ui-card-description>Multi-line text input components</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Sizes</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <ui-textarea label="Small" size="sm" placeholder="Small textarea..." [(ngModel)]="textareaDemo.small"></ui-textarea>
+                  <ui-textarea label="Medium" size="md" placeholder="Medium textarea..." [(ngModel)]="textareaDemo.medium"></ui-textarea>
+                  <ui-textarea label="Large" size="lg" placeholder="Large textarea..." [(ngModel)]="textareaDemo.large"></ui-textarea>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Resize Options</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <ui-textarea label="No Resize" resize="none" placeholder="Cannot be resized..." [(ngModel)]="textareaDemo.noResize"></ui-textarea>
+                  <ui-textarea label="Vertical" resize="vertical" placeholder="Resize vertically..." [(ngModel)]="textareaDemo.vertical"></ui-textarea>
+                  <ui-textarea label="Both" resize="both" placeholder="Resize both ways..." [(ngModel)]="textareaDemo.both"></ui-textarea>
+                </div>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Separator Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="MoreHorizontal">Separator</ui-card-title>
+            <ui-card-description>Visual dividers for content sections</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Basic Separators</h4>
+                <div class="space-y-4">
+                  <div>Content above</div>
+                  <ui-separator></ui-separator>
+                  <div>Content below</div>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">With Text</h4>
+                <div class="space-y-4">
+                  <div>Section 1</div>
+                  <ui-separator-with-text text="OR"></ui-separator-with-text>
+                  <div>Section 2</div>
+                  <ui-separator-with-text text="AND ALSO"></ui-separator-with-text>
+                  <div>Section 3</div>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Vertical</h4>
+                <div class="flex items-center gap-4 h-12">
+                  <span>Left</span>
+                  <ui-separator orientation="vertical"></ui-separator>
+                  <span>Center</span>
+                  <ui-separator orientation="vertical"></ui-separator>
+                  <span>Right</span>
+                </div>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Label Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Tag">Labels</ui-card-title>
+            <ui-card-description>Form labels and field labels</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Basic Labels</h4>
+                <div class="space-y-4">
+                  <ui-label text="Default Label" for="input1"></ui-label>
+                  <ui-label text="Required Label" for="input2" [required]="true"></ui-label>
+                  <ui-label text="Large Label" for="input3" size="lg"></ui-label>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Field Labels</h4>
+                <div class="space-y-4">
+                  <ui-field-label label="Username" [required]="true" helperText="Choose a unique username">
+                    <ui-input placeholder="Enter username"></ui-input>
+                  </ui-field-label>
+                  <ui-field-label label="Email" errorMessage="Please enter a valid email">
+                    <ui-input type="email" placeholder="Enter email"></ui-input>
+                  </ui-field-label>
+                </div>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Popover Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Info">Popover</ui-card-title>
+            <ui-card-description>Contextual popup content</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Basic Popover</h4>
+                <ui-popover>
+                  <ui-button>Click me</ui-button>
+                  <div slot="content" class="p-4">
+                    <h4 class="font-medium mb-2">Popover Title</h4>
+                    <p class="text-sm text-muted-foreground">This is the popover content. It can contain any HTML.</p>
+                  </div>
+                </ui-popover>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Different Placements</h4>
+                <div class="flex gap-4">
+                  <ui-popover placement="top">
+                    <ui-button variant="outline">Top</ui-button>
+                    <div slot="content" class="p-3">
+                      <p class="text-sm">Top placement</p>
+                    </div>
+                  </ui-popover>
+                  <ui-popover placement="bottom">
+                    <ui-button variant="outline">Bottom</ui-button>
+                    <div slot="content" class="p-3">
+                      <p class="text-sm">Bottom placement</p>
+                    </div>
+                  </ui-popover>
+                  <ui-popover placement="left">
+                    <ui-button variant="outline">Left</ui-button>
+                    <div slot="content" class="p-3">
+                      <p class="text-sm">Left placement</p>
+                    </div>
+                  </ui-popover>
+                  <ui-popover placement="right">
+                    <ui-button variant="outline">Right</ui-button>
+                    <div slot="content" class="p-3">
+                      <p class="text-sm">Right placement</p>
+                    </div>
+                  </ui-popover>
+                </div>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Command Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Search">Command Palette</ui-card-title>
+            <ui-card-description>Searchable command interface</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Basic Command</h4>
+                <ui-command 
+                  placeholder="Type a command..."
+                  [items]="commandItems"
+                  (itemSelected)="onCommandSelected($event)">
+                </ui-command>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Command Dialog</h4>
+                <ui-button (clicked)="openCommandDialog()">Open Command Dialog</ui-button>
+                <ui-command-dialog
+                  [isOpen]="commandDialogOpen"
+                  (openChange)="commandDialogOpen = $event"
+                  placeholder="Search commands..."
+                  [items]="commandItems"
+                  (itemSelected)="onCommandSelected($event)">
+                </ui-command-dialog>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Collapsible Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="ChevronDown">Collapsible</ui-card-title>
+            <ui-card-description>Expandable content sections</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Basic Collapsible</h4>
+                <ui-collapsible 
+                  title="Click to expand" 
+                  [isOpen]="collapsibleDemo.basic"
+                  (openChange)="collapsibleDemo.basic = $event">
+                  <p>This content can be collapsed and expanded. It's useful for hiding detailed information that users can reveal when needed.</p>
+                </ui-collapsible>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Collapsible Group</h4>
+                <ui-collapsible-group [allowMultiple]="false">
+                  <ui-collapsible 
+                    *ngFor="let item of collapsibleItems" 
+                    [title]="item.title"
+                    [isOpen]="item.isOpen"
+                    (openChange)="item.isOpen = $event">
+                    <p>{{ item.content }}</p>
+                  </ui-collapsible>
+                </ui-collapsible-group>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Toggle Group Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Grid">Toggle Group</ui-card-title>
+            <ui-card-description>Grouped toggle buttons</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Single Selection</h4>
+                <ui-toggle-group 
+                  [options]="toggleOptions"
+                  type="single"
+                  [(ngModel)]="toggleDemo.single">
+                </ui-toggle-group>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Multiple Selection</h4>
+                <ui-toggle-group 
+                  [options]="toggleOptions"
+                  type="multiple"
+                  [(ngModel)]="toggleDemo.multiple">
+                </ui-toggle-group>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">With Icons</h4>
+                <ui-toggle-group 
+                  [options]="toggleIconOptions"
+                  type="single"
+                  [(ngModel)]="toggleDemo.icons">
+                </ui-toggle-group>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Dialog Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Layout">Dialog</ui-card-title>
+            <ui-card-description>Modal dialogs and confirmations</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Basic Dialog</h4>
+                <ui-button (clicked)="openDialog('basic')">Open Dialog</ui-button>
+                <ui-dialog
+                  [isOpen]="dialogDemo.basic"
+                  (openChange)="dialogDemo.basic = $event"
+                  title="Basic Dialog"
+                  description="This is a basic dialog example">
+                  <p>Dialog content goes here. You can put any content inside.</p>
+                  <div slot="footer">
+                    <ui-button variant="outline" (clicked)="closeDialog('basic')">Cancel</ui-button>
+                    <ui-button (clicked)="closeDialog('basic')">OK</ui-button>
+                  </div>
+                </ui-dialog>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Confirmation Dialog</h4>
+                <ui-button variant="destructive" (clicked)="openConfirmation()">Delete Item</ui-button>
+                <ui-confirmation-dialog
+                  [isOpen]="confirmationDemo.isOpen"
+                  [config]="confirmationDemo.config"
+                  (confirmed)="onConfirmationConfirmed()"
+                  (cancelled)="onConfirmationCancelled()"
+                  (closed)="confirmationDemo.isOpen = false">
+                </ui-confirmation-dialog>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Form Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Edit">Form Components</ui-card-title>
+            <ui-card-description>Form wrapper and field components</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Form with Validation</h4>
+                <ui-form
+                  [formGroup]="demoForm"
+                  title="User Information"
+                  description="Please fill out your information"
+                  [showDefaultActions]="true"
+                  (submitted)="onFormSubmitted($event)"
+                  (cancelled)="onFormCancelled()">
+                  
+                  <ui-form-field label="Full Name" [required]="true">
+                    <ui-input formControlName="name" placeholder="Enter your full name"></ui-input>
+                  </ui-form-field>
+                  
+                  <ui-form-field label="Email Address" [required]="true">
+                    <ui-input type="email" formControlName="email" placeholder="Enter your email"></ui-input>
+                  </ui-form-field>
+                  
+                  <ui-form-field label="Bio" helperText="Tell us about yourself">
+                    <ui-textarea formControlName="bio" placeholder="Write a short bio..."></ui-textarea>
+                  </ui-form-field>
+                </ui-form>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Calendar Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Calendar">Calendar</ui-card-title>
+            <ui-card-description>Full calendar component</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Single Date Selection</h4>
+                <ui-calendar
+                  mode="single"
+                  size="md"
+                  [(ngModel)]="calendarDemo.single">
+                </ui-calendar>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Date Range Selection</h4>
+                <ui-calendar
+                  mode="range"
+                  size="md"
+                  [(ngModel)]="calendarDemo.range">
+                </ui-calendar>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+        
+      </div>
+      
+      <!-- Toast Container -->
+      <ui-toast-container 
+        [toasts]="toasts" 
+        position="top-right"
+        (toastRemoved)="removeToast($event)">
+      </ui-toast-container>
+      
+      <!-- Modals -->
+      <ui-modal 
+        [(isOpen)]="modals.basic" 
+        title="Basic Modal"
+        description="This is a basic modal example">
+        <p>This is the modal content. You can put any content here.</p>
+        <div slot="footer">
+          <ui-button variant="outline" (clicked)="closeModal('basic')">Cancel</ui-button>
+          <ui-button (clicked)="closeModal('basic')">OK</ui-button>
+        </div>
+      </ui-modal>
+      
+      <ui-modal 
+        [(isOpen)]="modals.form" 
+        title="Form Modal"
+        size="lg">
+        <div class="space-y-4">
+          <ui-input label="Name" placeholder="Enter your name" [(ngModel)]="formData.name"></ui-input>
+          <ui-input label="Email" type="email" placeholder="Enter your email" [(ngModel)]="formData.email"></ui-input>
+          <ui-radio-group 
+            label="Preferred contact method"
+            [options]="contactOptions"
+            [(ngModel)]="formData.contact">
+          </ui-radio-group>
+        </div>
+        <div slot="footer">
+          <ui-button variant="outline" (clicked)="closeModal('form')">Cancel</ui-button>
+          <ui-button (clicked)="submitForm()">Submit</ui-button>
+        </div>
+      </ui-modal>
+      
+      <ui-modal 
+        [(isOpen)]="modals.confirm" 
+        title="Confirm Action"
+        [icon]="AlertTriangle"
+        size="sm">
+        <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+        <div slot="footer">
+          <ui-button variant="outline" (clicked)="closeModal('confirm')">Cancel</ui-button>
+          <ui-button variant="destructive" (clicked)="confirmAction()">Delete</ui-button>
+        </div>
+      </ui-modal>
   `
 })
 export class UiShowcaseComponent {
@@ -1090,6 +1550,17 @@ export class UiShowcaseComponent {
   Calendar = Calendar;
   Upload = Upload;
   Settings = Settings;
+
+  // Form group for reactive forms demo
+  demoForm: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.demoForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      bio: ['']
+    });
+  }
 
   // Input values
   inputValue1 = '';
@@ -1167,6 +1638,48 @@ export class UiShowcaseComponent {
     { id: '3', title: 'Bob Johnson', description: 'Designer', category: 'Users' },
     { id: '4', title: 'Alice Brown', description: 'Data Analyst', category: 'Users' }
   ];
+
+  // New component demo values
+  textareaDemo = {
+    small: '',
+    medium: '',
+    large: '',
+    noResize: '',
+    vertical: '',
+    both: ''
+  };
+
+  collapsibleDemo = {
+    basic: false
+  };
+
+  toggleDemo = {
+    single: '',
+    multiple: [],
+    icons: ''
+  };
+
+  dialogDemo = {
+    basic: false
+  };
+
+  confirmationDemo = {
+    isOpen: false,
+    config: {
+      title: 'Delete Item',
+      message: 'Are you sure you want to delete this item? This action cannot be undone.',
+      type: 'error' as any,
+      confirmText: 'Delete',
+      cancelText: 'Cancel'
+    }
+  };
+
+  calendarDemo = {
+    single: null,
+    range: null
+  };
+
+  commandDialogOpen = false;
   
   // Select options
   basicOptions: SelectOption[] = [
@@ -1242,6 +1755,50 @@ export class UiShowcaseComponent {
     { id: 'copy', label: 'Copy', icon: this.Copy, shortcut: '⌘C' },
     { id: 'separator-1', label: '', separator: true },
     { id: 'delete', label: 'Delete', icon: this.Trash2, destructive: true, shortcut: '⌘⌫' }
+  ];
+
+  // New component options
+  toggleOptions: ToggleOption[] = [
+    { value: 'left', label: 'Left' },
+    { value: 'center', label: 'Center' },
+    { value: 'right', label: 'Right' }
+  ];
+
+  toggleIconOptions: ToggleOption[] = [
+    { value: 'bold', label: 'Bold', icon: this.Edit },
+    { value: 'italic', label: 'Italic', icon: this.Type },
+    { value: 'underline', label: 'Underline', icon: this.MoreHorizontal }
+  ];
+
+  commandItems: CommandItem[] = [
+    { id: 'new', label: 'New File', icon: this.Plus, shortcut: ['⌘', 'N'] },
+    { id: 'open', label: 'Open File', icon: this.Upload, shortcut: ['⌘', 'O'] },
+    { id: 'save', label: 'Save', icon: this.Save, shortcut: ['⌘', 'S'] },
+    { id: 'settings', label: 'Settings', icon: this.Settings, shortcut: ['⌘', ','] }
+  ];
+
+  collapsibleItems: any[] = [
+    {
+      id: 'item1',
+      title: 'What is Angular?',
+      content: 'Angular is a platform and framework for building single-page client applications using HTML and TypeScript.',
+      icon: this.Info,
+      isOpen: false
+    },
+    {
+      id: 'item2',
+      title: 'What is TypeScript?',
+      content: 'TypeScript is a strongly typed programming language that builds on JavaScript.',
+      icon: this.Type,
+      isOpen: false
+    },
+    {
+      id: 'item3',
+      title: 'What is Tailwind CSS?',
+      content: 'Tailwind CSS is a utility-first CSS framework for rapidly building custom user interfaces.',
+      icon: this.Palette,
+      isOpen: false
+    }
   ];
   
   // Table data
@@ -1404,6 +1961,57 @@ export class UiShowcaseComponent {
     } else {
       this.searchResults = [];
     }
+  }
+
+  // New component methods
+  openCommandDialog(): void {
+    this.commandDialogOpen = true;
+  }
+
+  onCommandSelected(item: CommandItem): void {
+    console.log('Command selected:', item);
+    this.commandDialogOpen = false;
+    this.showToast('info', {
+      title: 'Command executed',
+      description: `${item.label} command was executed`
+    });
+  }
+
+  openDialog(type: string): void {
+    (this.dialogDemo as any)[type] = true;
+  }
+
+  closeDialog(type: string): void {
+    (this.dialogDemo as any)[type] = false;
+  }
+
+  openConfirmation(): void {
+    this.confirmationDemo.isOpen = true;
+  }
+
+  onConfirmationConfirmed(): void {
+    console.log('Confirmation confirmed');
+    this.showToast('success', {
+      title: 'Item deleted',
+      description: 'The item has been successfully deleted'
+    });
+  }
+
+  onConfirmationCancelled(): void {
+    console.log('Confirmation cancelled');
+  }
+
+  onFormSubmitted(formData: any): void {
+    console.log('Form submitted:', formData);
+    this.showToast('success', {
+      title: 'Form submitted',
+      description: 'Your information has been saved successfully'
+    });
+  }
+
+  onFormCancelled(): void {
+    console.log('Form cancelled');
+    this.demoForm.reset();
   }
   
   onSearchResultSelected(result: SearchResult): void {

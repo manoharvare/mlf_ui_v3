@@ -120,9 +120,9 @@ export class DatePickerComponent implements ControlValueAccessor {
   get iconSize(): number {
     switch (this.size) {
       case 'sm': return 14;
-      case 'md': return 16;
-      case 'lg': return 18;
-      default: return 16;
+      case 'md': return 20;
+      case 'lg': return 28;
+      default: return 20;
     }
   }
 
@@ -131,11 +131,11 @@ export class DatePickerComponent implements ControlValueAccessor {
       case 'sm':
         return 'h-8 px-2 text-xs';
       case 'md':
-        return 'h-10 px-3 text-sm';
-      case 'lg':
         return 'h-12 px-4 text-base';
+      case 'lg':
+        return 'h-16 px-6 text-xl';
       default:
-        return 'h-10 px-3 text-sm';
+        return 'h-12 px-4 text-base';
     }
   }
 

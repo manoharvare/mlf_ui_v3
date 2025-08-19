@@ -167,3 +167,84 @@ export {
   type SliderSize,
   type SliderOrientation 
 } from './slider.component';
+
+// Textarea Component
+export { 
+  TextareaComponent,
+  type TextareaSize,
+  type TextareaResize 
+} from './textarea.component';
+
+// Separator Components
+export { 
+  SeparatorComponent,
+  SeparatorWithTextComponent,
+  type SeparatorOrientation,
+  type SeparatorVariant,
+  type SeparatorSize 
+} from './separator.component';
+
+// Label Components
+export { 
+  LabelComponent,
+  FieldLabelComponent,
+  type LabelSize,
+  type LabelVariant 
+} from './label.component';
+
+// Popover Component
+export { 
+  PopoverComponent,
+  type PopoverPlacement,
+  type PopoverTrigger 
+} from './popover.component';
+
+// Command Components
+export { 
+  CommandComponent,
+  CommandDialogComponent,
+  type CommandItem,
+  type CommandGroup 
+} from './command.component';
+
+// Collapsible Components
+export { 
+  CollapsibleComponent,
+  CollapsibleGroupComponent,
+  type CollapsibleSize 
+} from './collapsible.component';
+
+// Toggle Group Component
+export { 
+  ToggleGroupComponent,
+  type ToggleOption,
+  type ToggleGroupSize,
+  type ToggleGroupVariant,
+  type ToggleGroupType 
+} from './toggle-group.component';
+
+// Dialog Components
+export { 
+  DialogComponent,
+  ConfirmationDialogComponent,
+  type DialogSize,
+  type DialogType,
+  type ConfirmationConfig 
+} from './dialog.component';
+
+// Form Components
+export { 
+  FormComponent,
+  FormFieldComponent,
+  type FormFieldError,
+  type FormSize,
+  type FormLayout 
+} from './form.component';
+
+// Calendar Component
+export { 
+  CalendarComponent,
+  type CalendarMode,
+  type CalendarSize,
+  type CalendarDate 
+} from './calendar.component';
