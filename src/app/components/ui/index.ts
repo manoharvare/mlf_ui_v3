@@ -94,3 +94,48 @@ export {
   DropdownComponent,
   type DropdownItem 
 } from './dropdown.component';
+
+// Data Table Component
+export { 
+  DataTableComponent,
+  type TableColumn,
+  type TableAction,
+  type SortConfig,
+  type FilterConfig,
+  type PaginationConfig 
+} from './data-table.component';
+
+// Pagination Component
+export { 
+  PaginationComponent,
+  type PaginationInfo 
+} from './pagination.component';
+
+// Breadcrumb Components
+export { 
+  BreadcrumbComponent,
+  BreadcrumbItemComponent,
+  BreadcrumbLinkComponent,
+  BreadcrumbPageComponent,
+  type BreadcrumbItem 
+} from './breadcrumb.component';
+
+// Avatar Components
+export { 
+  AvatarComponent,
+  AvatarGroupComponent,
+  type AvatarSize,
+  type AvatarShape 
+} from './avatar.component';
+
+// Skeleton Components
+export { 
+  SkeletonComponent,
+  SkeletonTextComponent,
+  SkeletonCardComponent,
+  SkeletonTableComponent,
+  SkeletonListComponent,
+  SkeletonFormComponent,
+  type SkeletonVariant,
+  type SkeletonAnimation 
+} from './skeleton.component';

@@ -12,7 +12,6 @@ import {
   Search,
   User,
   Shield,
-  Eye,
   CheckCircle,
   Clock,
   XCircle,
@@ -25,14 +24,18 @@ import {
   Play,
   ChevronDown,
   AlertTriangle,
-  LucideIconData,
   MoreHorizontal,
   Edit,
   Trash2,
   Copy,
   Palette,
   Zap,
-  Info
+  Info,
+  Grid,
+  Navigation,
+  Loader,
+  Eye,
+  ChevronRight
 } from 'lucide-angular';
 import { 
   ButtonComponent, 
@@ -58,12 +61,24 @@ import {
   TooltipComponent,
   SpinnerComponent,
   DropdownComponent,
+  DataTableComponent,
+  PaginationComponent,
+  BreadcrumbComponent,
+  AvatarComponent,
+  AvatarGroupComponent,
+  SkeletonComponent,
+  SkeletonCardComponent,
+  SkeletonTableComponent,
+  SkeletonListComponent,
   type SelectOption,
   type RadioOption,
   type ToastData,
   type TabItem,
   type AccordionItem,
-  type DropdownItem
+  type DropdownItem,
+  type TableColumn,
+  type TableAction,
+  type BreadcrumbItem
 } from './index';
 
 @Component({
@@ -95,7 +110,16 @@ import {
     AccordionComponent,
     TooltipComponent,
     SpinnerComponent,
-    DropdownComponent
+    DropdownComponent,
+    DataTableComponent,
+    PaginationComponent,
+    BreadcrumbComponent,
+    AvatarComponent,
+    AvatarGroupComponent,
+    SkeletonComponent,
+    SkeletonCardComponent,
+    SkeletonTableComponent,
+    SkeletonListComponent
   ],
   template: `
     <div class="p-8 space-y-8 bg-background min-h-screen">
@@ -645,6 +669,137 @@ import {
           </ui-card-content>
         </ui-card>
 
+        <!-- Data Table Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Grid">Data Table</ui-card-title>
+            <ui-card-description>Feature-rich data table with sorting, filtering, and pagination</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <ui-data-table
+              [data]="tableData"
+              [columns]="tableColumns"
+              [actions]="tableActions"
+              [pagination]="tablePagination"
+              [loading]="tableLoading"
+              (actionClick)="onTableAction($event)"
+              (sortChange)="onTableSort($event)"
+              (pageChange)="onTablePageChange($event)"
+            ></ui-data-table>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Breadcrumb Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Navigation">Breadcrumbs</ui-card-title>
+            <ui-card-description>Navigation breadcrumbs for hierarchical content</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-4">
+              <div>
+                <h4 class="text-sm font-medium mb-2">Basic Breadcrumb</h4>
+                <ui-breadcrumb [items]="breadcrumbItems"></ui-breadcrumb>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-2">With Home Icon</h4>
+                <ui-breadcrumb [items]="breadcrumbItems" [showHome]="true"></ui-breadcrumb>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Avatar Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="User">Avatars</ui-card-title>
+            <ui-card-description>User profile pictures and placeholders</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Sizes</h4>
+                <div class="flex items-center gap-4">
+                  <ui-avatar size="xs" name="John Doe"></ui-avatar>
+                  <ui-avatar size="sm" name="Jane Smith"></ui-avatar>
+                  <ui-avatar size="md" name="Bob Johnson"></ui-avatar>
+                  <ui-avatar size="lg" name="Alice Brown"></ui-avatar>
+                  <ui-avatar size="xl" name="Charlie Wilson"></ui-avatar>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">With Status</h4>
+                <div class="flex items-center gap-4">
+                  <ui-avatar name="Online User" status="online"></ui-avatar>
+                  <ui-avatar name="Away User" status="away"></ui-avatar>
+                  <ui-avatar name="Busy User" status="busy"></ui-avatar>
+                  <ui-avatar name="Offline User" status="offline"></ui-avatar>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">With Badges</h4>
+                <div class="flex items-center gap-4">
+                  <ui-avatar name="User One" [badge]="3"></ui-avatar>
+                  <ui-avatar name="User Two" [badge]="12"></ui-avatar>
+                  <ui-avatar name="User Three" [badge]="99"></ui-avatar>
+                  <ui-avatar name="User Four" [badge]="150"></ui-avatar>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Avatar Group</h4>
+                <ui-avatar-group [max]="3" [totalCount]="8">
+                  <ui-avatar name="User 1"></ui-avatar>
+                  <ui-avatar name="User 2"></ui-avatar>
+                  <ui-avatar name="User 3"></ui-avatar>
+                  <ui-avatar name="User 4"></ui-avatar>
+                  <ui-avatar name="User 5"></ui-avatar>
+                </ui-avatar-group>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Skeleton Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="Loader">Skeleton Loading</ui-card-title>
+            <ui-card-description>Loading placeholders for better UX</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <h4 class="text-sm font-medium mb-3">Card Skeleton</h4>
+                <ui-skeleton-card [showImage]="true" [showActions]="true"></ui-skeleton-card>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium mb-3">List Skeleton</h4>
+                <ui-skeleton-list [items]="3"></ui-skeleton-list>
+              </div>
+              <div class="lg:col-span-2">
+                <h4 class="text-sm font-medium mb-3">Table Skeleton</h4>
+                <ui-skeleton-table [rows]="4"></ui-skeleton-table>
+              </div>
+            </div>
+          </ui-card-content>
+        </ui-card>
+
+        <!-- Pagination Section -->
+        <ui-card class="mb-8">
+          <ui-card-header>
+            <ui-card-title [icon]="ChevronRight">Pagination</ui-card-title>
+            <ui-card-description>Navigate through pages of content</ui-card-description>
+          </ui-card-header>
+          <ui-card-content>
+            <ui-pagination
+              [currentPage]="paginationDemo.currentPage"
+              [totalPages]="paginationDemo.totalPages"
+              [totalItems]="paginationDemo.totalItems"
+              [itemsPerPage]="paginationDemo.itemsPerPage"
+              (pageChange)="onPaginationChange($event)"
+            ></ui-pagination>
+          </ui-card-content>
+        </ui-card>
+
         <!-- Interactive Demo -->
         <ui-card>
           <ui-card-header>
@@ -775,6 +930,10 @@ export class UiShowcaseComponent {
   Palette = Palette;
   Zap = Zap;
   Info = Info;
+  Grid = Grid;
+  Navigation = Navigation;
+  Loader = Loader;
+  ChevronRight = ChevronRight;
 
   // Input values
   inputValue1 = '';
@@ -905,6 +1064,54 @@ export class UiShowcaseComponent {
     { id: 'delete', label: 'Delete', icon: this.Trash2, destructive: true, shortcut: '⌘⌫' }
   ];
   
+  // Table data
+  tableData = [
+    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active', lastLogin: '2024-01-15' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Active', lastLogin: '2024-01-14' },
+    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User', status: 'Inactive', lastLogin: '2024-01-10' },
+    { id: 4, name: 'Alice Brown', email: 'alice@example.com', role: 'Moderator', status: 'Active', lastLogin: '2024-01-16' },
+    { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', role: 'User', status: 'Active', lastLogin: '2024-01-13' }
+  ];
+  
+  tableColumns: TableColumn[] = [
+    { key: 'name', label: 'Name', sortable: true, filterable: true },
+    { key: 'email', label: 'Email', sortable: true, filterable: true },
+    { key: 'role', label: 'Role', sortable: true, type: 'badge', badge: { variant: 'secondary', getValue: (value) => value } },
+    { key: 'status', label: 'Status', sortable: true, type: 'badge', badge: { variant: 'success', getValue: (value) => value } },
+    { key: 'lastLogin', label: 'Last Login', sortable: true, type: 'date' }
+  ];
+  
+  tableActions: TableAction[] = [
+    { id: 'view', label: 'View', icon: this.Eye },
+    { id: 'edit', label: 'Edit', icon: this.Edit },
+    { id: 'delete', label: 'Delete', icon: this.Trash2, variant: 'destructive' }
+  ];
+  
+  tablePagination = {
+    page: 1,
+    pageSize: 10,
+    total: 5,
+    pageSizeOptions: [5, 10, 25, 50]
+  };
+  
+  tableLoading = false;
+  
+  // Breadcrumb data
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Users', href: '/users' },
+    { label: 'Profile', href: '/users/profile' },
+    { label: 'Settings' }
+  ];
+  
+  // Pagination demo data
+  paginationDemo = {
+    currentPage: 1,
+    totalPages: 10,
+    totalItems: 100,
+    itemsPerPage: 10
+  };
+  
   onButtonClick(variant: string): void {
     console.log(`${variant} button clicked!`);
   }
@@ -968,5 +1175,26 @@ export class UiShowcaseComponent {
   onDropdownItemSelected(item: DropdownItem): void {
     console.log('Dropdown item selected:', item);
     this.showToast('info');
+  }
+  
+  // Table methods
+  onTableAction(event: {action: TableAction, row: any}): void {
+    console.log('Table action:', event.action.id, 'on row:', event.row);
+    this.showToast('info');
+  }
+  
+  onTableSort(sortConfig: any): void {
+    console.log('Table sort:', sortConfig);
+  }
+  
+  onTablePageChange(page: number): void {
+    console.log('Table page change:', page);
+    this.tablePagination.page = page;
+  }
+  
+  // Pagination methods
+  onPaginationChange(page: number): void {
+    console.log('Pagination change:', page);
+    this.paginationDemo.currentPage = page;
   }
 }

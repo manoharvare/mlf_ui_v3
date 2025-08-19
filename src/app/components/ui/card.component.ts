@@ -11,7 +11,8 @@ import {
   CheckSquare,
   BookOpen,
   PieChart,
-  Users
+  Users,
+  LucideIconData
 } from 'lucide-angular';
 
 @Component({
@@ -131,7 +132,7 @@ export class CardHeaderComponent {}
 })
 export class CardTitleComponent {
   @Input() size: 'sm' | 'md' | 'lg' | 'xl' = 'md';
-  @Input() icon?: any;
+  @Input() icon?: LucideIconData;
 
   // Icon references for template
   BarChart3 = BarChart3;
