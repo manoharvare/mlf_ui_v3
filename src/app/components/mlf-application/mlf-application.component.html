@@ -1,0 +1,186 @@
+<div class="flex h-full bg-background">
+  <!-- Sidebar -->
+  <div class="h-full transition-all duration-300 ease-in-out overflow-hidden flex-shrink-0" 
+       [class.w-0]="isSidebarCollapsed()" 
+       [class.w-80]="!isSidebarCollapsed()">
+    <!-- Sidebar component -->
+    <div *ngIf="!isSidebarCollapsed()" class="h-full bg-sidebar text-sidebar-foreground p-4 flex flex-col">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-medium">MLF Application</h2>
+        <button class="p-1 rounded-md hover:bg-sidebar-accent/20 text-sidebar-foreground" (click)="toggleSidebar()">
+          <lucide-icon [name]="ChevronLeft" [size]="18"></lucide-icon>
+        </button>
+      </div>
+      
+      <!-- User info -->
+      <div class="mb-6 p-3 bg-sidebar-accent/10 rounded-md">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-sidebar-primary flex items-center justify-center text-sidebar-primary-foreground">
+            <lucide-icon [name]="Users" [size]="18"></lucide-icon>
+          </div>
+          <div>
+            <p class="font-medium">{{ currentUser()?.name }}</p>
+            <p class="text-xs opacity-70">{{ currentUser()?.id }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Navigation -->
+      <div class="flex-1 overflow-y-auto">
+        <div class="space-y-1">
+          <ng-container *ngFor="let permission of currentUser()?.permissions || []">
+            <div *ngIf="pageConfig[permission]" 
+                 [ngClass]="{
+                   'flex items-center px-3 py-2 rounded-md cursor-pointer transition-colors': true,
+                   'bg-sidebar-primary text-sidebar-primary-foreground': activeItem() === permission,
+                   'hover:bg-sidebar-accent/20': activeItem() !== permission
+                 }"
+                 (click)="handleItemSelect(permission)">
+              <lucide-icon [name]="getIconForMenuItem(permission)" [size]="18" class="mr-3"></lucide-icon>
+              <span>{{ pageConfig[permission].title }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="mt-auto pt-4 border-t border-sidebar-border/30">
+        <div class="flex items-center justify-between px-3 py-2 text-sm opacity-70">
+          <span>MLF v1.0.0</span>
+          <lucide-icon [name]="Settings2" [size]="16"></lucide-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="flex-1 h-full flex flex-col overflow-hidden">
+    <!-- Header -->
+    <header class="h-16 border-b border-border bg-card flex items-center px-4 justify-between">
+      <div class="flex items-center">
+        <button class="p-2 rounded-md hover:bg-muted mr-3" (click)="toggleSidebar()">
+          <span class="sr-only">Toggle sidebar</span>
+          <lucide-icon [name]="Menu" [size]="20"></lucide-icon>
+        </button>
+        <div>
+          <h1 class="text-lg font-medium">{{ getCurrentPageTitle() }}</h1>
+          <p class="text-sm text-muted-foreground">{{ getCurrentPageSubtitle() }}</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-4">
+        <!-- Actions -->
+        <div class="flex items-center space-x-2">
+          <button class="p-2 rounded-md hover:bg-muted text-muted-foreground">
+            <lucide-icon [name]="Plus" [size]="18"></lucide-icon>
+          </button>
+          <button class="p-2 rounded-md hover:bg-muted text-muted-foreground">
+            <lucide-icon [name]="Upload" [size]="18"></lucide-icon>
+          </button>
+          <button class="p-2 rounded-md hover:bg-muted text-muted-foreground">
+            <lucide-icon [name]="Download" [size]="18"></lucide-icon>
+          </button>
+        </div>
+        
+        <!-- User role selector -->
+        <div class="relative">
+          <button class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-muted">
+            <span>{{ currentUser()?.name }}</span>
+            <lucide-icon [name]="ChevronDown" [size]="16"></lucide-icon>
+          </button>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-auto bg-background p-4">
+      <!-- Project navigation (only shown for project-configurations with a selected project) -->
+      <div *ngIf="activeItem() === 'project-configurations' && currentProjectId()" 
+           class="mb-4 flex items-center text-sm text-muted-foreground">
+        <button class="flex items-center hover:text-foreground" (click)="handleBackToProjectList()">
+          <lucide-icon [name]="ChevronLeft" [size]="16" class="mr-1"></lucide-icon>
+          Back to Projects
+        </button>
+        <span class="mx-2">/</span>
+        <span class="font-medium text-foreground">Project {{ getProjectNumber() }}</span>
+      </div>
+      
+      <!-- Dynamic content based on active item -->
+      <div *ngIf="activeItem() === 'home'" class="p-6 bg-card rounded-lg shadow-sm border border-border">
+        <div class="flex items-center mb-4">
+          <lucide-icon [name]="Home" [size]="24" class="mr-3 text-primary"></lucide-icon>
+          <h2 class="text-xl font-medium">Welcome to MLF Dashboard</h2>
+        </div>
+        
+        <p class="text-muted-foreground mb-6">
+          This is a placeholder for the home dashboard component. In a complete implementation, 
+          this would be replaced with the actual component.
+        </p>
+        
+        <!-- Quick actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <div class="p-4 bg-muted rounded-md flex items-center">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+              <lucide-icon [name]="FileText" [size]="18"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="font-medium">Monthly Forecast</h3>
+              <p class="text-sm text-muted-foreground">Create new forecast</p>
+            </div>
+          </div>
+          
+          <div class="p-4 bg-muted rounded-md flex items-center">
+            <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary-foreground mr-3">
+              <lucide-icon [name]="BarChart3" [size]="18"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="font-medium">Variance Report</h3>
+              <p class="text-sm text-muted-foreground">View latest reports</p>
+            </div>
+          </div>
+          
+          <div class="p-4 bg-muted rounded-md flex items-center">
+            <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent-foreground mr-3">
+              <lucide-icon [name]="Settings" [size]="18"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="font-medium">Project Setup</h3>
+              <p class="text-sm text-muted-foreground">Configure projects</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Placeholder for other components -->
+      <div *ngIf="activeItem() !== 'home'" class="p-6 bg-card rounded-lg shadow-sm border border-border">
+        <div class="flex items-center mb-4">
+          <lucide-icon [name]="getIconForMenuItem(activeItem())" [size]="24" class="mr-3 text-primary"></lucide-icon>
+          <h2 class="text-xl font-medium">{{ getCurrentPageTitle() }}</h2>
+        </div>
+        
+        <p class="text-muted-foreground mb-6">
+          This is a placeholder for the {{ getCurrentPageTitle() }} component. In a complete implementation, 
+          this would be replaced with the actual component.
+        </p>
+        
+        <!-- Action buttons -->
+        <div class="flex space-x-3 mt-6">
+          <button class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center">
+            <lucide-icon [name]="Plus" [size]="16" class="mr-2"></lucide-icon>
+            Add New
+          </button>
+          
+          <button class="px-4 py-2 bg-muted text-muted-foreground rounded-md hover:bg-muted/80 transition-colors flex items-center">
+            <lucide-icon [name]="Upload" [size]="16" class="mr-2"></lucide-icon>
+            Import
+          </button>
+          
+          <button class="px-4 py-2 bg-muted text-muted-foreground rounded-md hover:bg-muted/80 transition-colors flex items-center">
+            <lucide-icon [name]="Download" [size]="16" class="mr-2"></lucide-icon>
+            Export
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
