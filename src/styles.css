@@ -1,3 +1,159 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles for MLF Angular application */
 
 @import "tailwindcss";
+
+/* Theme configuration using Tailwind CSS v4 CSS-first approach */
+@theme {
+  /* Typography */
+  --font-size: 14px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+
+  /* Layout */
+  --radius: 0.5rem;
+
+  /* Base colors */
+  --background: 210 40% 98%;
+  --foreground: 222.2 84% 4.9%;
+  --border: 214 32% 91%;
+  --ring: 199 89% 48%;
+
+  /* Semantic colors */
+  --primary: 199 89% 48%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 151 81% 96%;
+  --secondary-foreground: 160 84% 39%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  --muted: 199 89% 96%;
+  --muted-foreground: 215 16% 47%;
+
+  --accent: 120 60% 90%;
+  --accent-foreground: 160 84% 39%;
+
+  /* Component colors */
+  --input: 0 0% 100%;
+  --input-background: 0 0% 100%;
+  --switch-background: 214 32% 91%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  /* Sidebar colors */
+  --sidebar: 224 76% 48%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 217 91% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 224 76% 48%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 224 76% 48%;
+  --sidebar-ring: 217 91% 60%;
+
+  /* Header colors */
+  --header-background: 0 0% 100%;
+  --header-foreground: 220 13% 18%;
+
+  /* Chart colors */
+  --chart-1: 199 89% 48%;
+  --chart-2: 160 84% 39%;
+  --chart-3: 188 95% 68%;
+  --chart-4: 142 76% 73%;
+  --chart-5: 199 95% 74%;
+
+  /* Container configuration */
+  --container-padding: 2rem;
+  --container-max-width-2xl: 1400px;
+
+  /* Border radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  /* Animation */
+  --animation-accordion-down: accordion-down 0.2s ease-out;
+  --animation-accordion-up: accordion-up 0.2s ease-out;
+}
+
+/* Custom sidebar border color mixing */
+.sidebar-border {
+  border-color: color-mix(in oklab, var(--sidebar-border) 30%, transparent);
+}
+
+/* Base typography */
+h1 {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+}
+
+h3 {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+}
+
+h4 {
+  font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+}
+
+p {
+  font-size: 1rem;
+  font-weight: var(--font-weight-normal);
+  line-height: 1.5;
+}
+
+label {
+  font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+}
+
+button {
+  font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+}
+
+input {
+  font-size: 1rem;
+  font-weight: var(--font-weight-normal);
+  line-height: 1.5;
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+/* Keyframes for animations */
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--accordion-content-height); }
+  to { height: 0; }
+}
