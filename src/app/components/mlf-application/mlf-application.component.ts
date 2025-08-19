@@ -5,6 +5,15 @@ import { UserRoleService } from '../../services/user-role.service';
 import { UserRole } from '../../models/user-role.model';
 import { SidebarComponent } from '../layout/sidebar.component';
 import { HeaderComponent } from '../layout/header.component';
+import { HomeComponent } from '../pages/home.component';
+import { MonthlyForecastComponent } from '../pages/monthly-forecast.component';
+import { MasterDataConfigurationsComponent } from '../pages/master-data-configurations.component';
+import { ProjectConfigurationsComponent } from '../pages/project-configurations.component';
+import { ForecastApprovalsComponent } from '../pages/forecast-approvals.component';
+import { ManageMLFRulesComponent } from '../pages/manage-mlf-rules.component';
+import { MLFVarianceReportComponent } from '../pages/mlf-variance-report.component';
+import { PowerBIReportsComponent } from '../pages/power-bi-reports.component';
+import { UserManagementComponent } from '../pages/user-management.component';
 
 @Component({
   selector: 'app-mlf-application',
@@ -12,17 +21,25 @@ import { HeaderComponent } from '../layout/header.component';
   imports: [
     CommonModule,
     SidebarComponent,
-    HeaderComponent
+    HeaderComponent,
+    HomeComponent,
+    MonthlyForecastComponent,
+    MasterDataConfigurationsComponent,
+    ProjectConfigurationsComponent,
+    ForecastApprovalsComponent,
+    ManageMLFRulesComponent,
+    MLFVarianceReportComponent,
+    PowerBIReportsComponent,
+    UserManagementComponent
   ],
   template: `
     <div class="flex h-screen bg-background">
       <!-- Sidebar -->
       <app-sidebar
-        [isCollapsed]="isSidebarCollapsed()"
         [activeItem]="activeItem()"
         [currentUser]="currentUser()"
-        (toggleSidebar)="toggleSidebar()"
         (navigate)="handleNavigate($event)"
+        (onLogout)="handleLogout()"
       ></app-sidebar>
       
       <!-- Main content area -->
@@ -34,7 +51,6 @@ import { HeaderComponent } from '../layout/header.component';
           [currentUser]="currentUser()"
           [availableRoles]="availableRoles()"
           [notificationCount]="8"
-          (toggleSidebar)="toggleSidebar()"
           (search)="handleSearch($event)"
           (quickAction)="handleQuickAction($event)"
           (notifications)="handleNotifications()"
@@ -44,47 +60,55 @@ import { HeaderComponent } from '../layout/header.component';
         ></app-header>
         
         <!-- Page content -->
-        <main class="flex-1 overflow-auto">
-          <!-- Page content placeholder -->
-          <div class="p-6">
-            <div class="bg-card rounded-lg border p-6">
-              <h2 class="text-xl font-semibold mb-4">{{ getCurrentPageTitle() }}</h2>
-              <p class="text-muted-foreground mb-6">
-                {{ getCurrentPageSubtitle() }}
-              </p>
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                <div class="bg-muted/50 rounded-lg p-4">
-                  <h3 class="font-medium mb-2">Quick Stats</h3>
-                  <p class="text-sm text-muted-foreground">Current user: {{ currentUser()?.name || 'User' }}</p>
-                  <p class="text-sm text-muted-foreground">Role: {{ getRoleDisplayName() }}</p>
-                  <p class="text-sm text-muted-foreground">Active page: {{ activeItem() }}</p>
-                </div>
-                
-                <div class="bg-muted/50 rounded-lg p-4">
-                  <h3 class="font-medium mb-2">Permissions</h3>
-                  <p class="text-sm text-muted-foreground">
-                    {{ currentUser()?.permissions?.length || 0 }} accessible pages
-                  </p>
-                </div>
-                
-                <div class="bg-muted/50 rounded-lg p-4">
-                  <h3 class="font-medium mb-2">Navigation</h3>
-                  <p class="text-sm text-muted-foreground">
-                    Sidebar {{ isSidebarCollapsed() ? 'collapsed' : 'expanded' }}
-                  </p>
-                </div>
-              </div>
-              
-              <div class="flex space-x-3">
-                <button class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
-                  Get Started
-                </button>
-                <button class="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors">
-                  Learn More
-                </button>
-              </div>
-            </div>
+        <main class="flex-1 overflow-auto bg-background">
+          <!-- Home/Dashboard -->
+          <div *ngIf="activeItem() === 'home'">
+            <app-home 
+              [currentUser]="currentUser()?.name || 'User'"
+              (navigate)="handleNavigate($event)"
+            ></app-home>
+          </div>
+          
+          <!-- Monthly Forecast -->
+          <div *ngIf="activeItem() === 'monthly-forecast'">
+            <app-monthly-forecast></app-monthly-forecast>
+          </div>
+          
+          <!-- Master Data Configurations -->
+          <div *ngIf="activeItem() === 'master-data-configurations'">
+            <app-master-data-configurations></app-master-data-configurations>
+          </div>
+          
+          <!-- Project Configurations -->
+          <div *ngIf="activeItem() === 'project-configurations'">
+            <app-project-configurations 
+              (navigateToDetails)="handleNavigateToProjectDetails($event)"
+            ></app-project-configurations>
+          </div>
+          
+          <!-- Forecast Approvals -->
+          <div *ngIf="activeItem() === 'forecast-approvals'">
+            <app-forecast-approvals></app-forecast-approvals>
+          </div>
+          
+          <!-- Manage MLF Rules -->
+          <div *ngIf="activeItem() === 'manage-mlf-rules'">
+            <app-manage-mlf-rules></app-manage-mlf-rules>
+          </div>
+          
+          <!-- MLF Variance Report -->
+          <div *ngIf="activeItem() === 'mlf-variance-report'">
+            <app-mlf-variance-report></app-mlf-variance-report>
+          </div>
+          
+          <!-- Power BI Reports -->
+          <div *ngIf="activeItem() === 'power-bi-reports'">
+            <app-power-bi-reports></app-power-bi-reports>
+          </div>
+          
+          <!-- User Management -->
+          <div *ngIf="activeItem() === 'user-management'">
+            <app-user-management></app-user-management>
           </div>
         </main>
       </div>
@@ -94,7 +118,6 @@ import { HeaderComponent } from '../layout/header.component';
 })
 export class MlfApplicationComponent implements OnInit {
   activeItem = signal<string>('home');
-  isSidebarCollapsed = signal<boolean>(false);
   currentUser = signal<UserRole | null>(null);
   availableRoles = signal<UserRole[]>([]);
   
@@ -141,16 +164,16 @@ export class MlfApplicationComponent implements OnInit {
   constructor(
     private userRoleService: UserRoleService,
     private router: Router
-  ) {}
-  
-  ngOnInit(): void {
+  ) {
     // Set up effect to watch for user role changes
     effect(() => {
       const user = this.userRoleService.getCurrentUserRole()();
       this.currentUser.set(user);
       this.checkActiveItemPermission();
     });
-    
+  }
+  
+  ngOnInit(): void {
     // Get available roles
     this.availableRoles.set(this.userRoleService.getAvailableRoles()());
   }
@@ -168,12 +191,13 @@ export class MlfApplicationComponent implements OnInit {
     }
   }
   
-  toggleSidebar(): void {
-    this.isSidebarCollapsed.update(value => !value);
-  }
-  
   handleNavigate(page: string): void {
     this.activeItem.set(page);
+  }
+  
+  handleLogout(): void {
+    this.userRoleService.clearCurrentUserRole();
+    this.router.navigate(['/login']);
   }
   
   handleSearch(query: string): void {
@@ -207,6 +231,12 @@ export class MlfApplicationComponent implements OnInit {
   
   handleRoleChange(role: UserRole): void {
     this.userRoleService.setCurrentUserRole(role);
+  }
+  
+  handleNavigateToProjectDetails(projectId: string): void {
+    console.log('Navigate to project details:', projectId);
+    // In a full implementation, this would navigate to project details view
+    // For now, we'll just log it
   }
   
   getCurrentPageTitle(): string {

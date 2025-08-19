@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { 
   LucideAngularModule,
@@ -7,14 +7,15 @@ import {
   Database,
   Settings,
   FileText,
-  CheckSquare,
+  CheckCircle2,
   BookOpen,
   PieChart,
   Users,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Settings2,
-  LucideIconData
+  LogOut
 } from 'lucide-angular';
 import { ButtonComponent } from '../ui/button.component';
 import { SeparatorComponent } from '../ui/separator.component';
@@ -26,11 +27,12 @@ import { UserRole } from '../../models/user-role.model';
 
 interface NavigationItem {
   id: string;
-  title: string;
+  label: string;
   icon: any;
-  permissions: string[];
-  badge?: string;
-  children?: NavigationItem[];
+  subItems?: {
+    id: string;
+    label: string;
+  }[];
 }
 
 @Component({
@@ -47,258 +49,228 @@ interface NavigationItem {
     CollapsibleComponent
   ],
   template: `
-    <div class="h-full transition-all duration-300 ease-in-out overflow-hidden flex-shrink-0" 
-         [class.w-0]="isCollapsed" 
-         [class.w-80]="!isCollapsed">
-      
-      <!-- Sidebar content -->
-      <div *ngIf="!isCollapsed" class="h-full bg-sidebar text-sidebar-foreground flex flex-col">
-        
-        <!-- Header -->
-        <div class="flex items-center justify-between p-4 border-b border-sidebar-border/30">
-          <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span class="text-primary-foreground font-bold text-sm">MLF</span>
-            </div>
-            <h2 class="text-lg font-semibold">MLF Application</h2>
+    <div class="w-80 min-w-80 h-full bg-gradient-to-b from-sidebar to-sidebar/95 border-r sidebar-border flex flex-col">
+      <!-- Header -->
+      <div class="p-6 border-b sidebar-border">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-sidebar-primary rounded-lg">
+            <lucide-icon [name]="BarChart3" [size]="24" class="text-sidebar-primary-foreground"></lucide-icon>
           </div>
+          <div>
+            <h1 class="text-sidebar-foreground text-lg font-semibold">MLF</h1>
+            <p class="text-sidebar-foreground/70 text-sm">
+              Monthly Labor Forecast
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-1 py-6 min-h-0">
+        <ul class="space-y-1 px-4 h-full text-[rgba(141,147,162,1)]">
+          <li *ngFor="let item of getFilteredNavigationItems(); trackBy: trackByItemId">
+            <button
+              *ngIf="!item.subItems"
+              (click)="handleItemClick(item)"
+              [class]="getMainItemClasses(item.id)"
+            >
+              <lucide-icon [name]="item.icon" [size]="18"></lucide-icon>
+              <span class="flex-1 text-left">{{ item.label }}</span>
+            </button>
+            
+            <!-- Item with sub-items -->
+            <div *ngIf="item.subItems">
+              <button
+                (click)="toggleExpanded(item.id)"
+                [class]="getMainItemClasses(item.id, true)"
+              >
+                <lucide-icon [name]="item.icon" [size]="18"></lucide-icon>
+                <span class="flex-1 text-left">{{ item.label }}</span>
+                <lucide-icon 
+                  [name]="isExpanded(item.id) ? ChevronDown : ChevronRight" 
+                  [size]="16" 
+                  class="text-white/60"
+                ></lucide-icon>
+              </button>
+              
+              <!-- Sub Items -->
+              <ul *ngIf="isExpanded(item.id)" class="mt-2 ml-6 space-y-1">
+                <li *ngFor="let subItem of item.subItems">
+                  <button
+                    (click)="handleSubItemClick(subItem.id)"
+                    [class]="getSubItemClasses(subItem.id)"
+                  >
+                    <div class="w-2 h-2 rounded-full bg-white/40"></div>
+                    <span>{{ subItem.label }}</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Footer -->
+      <div class="p-4 border-t sidebar-border">
+        <div *ngIf="currentUser && onLogout" class="mb-3">
           <ui-button 
+            (clicked)="onLogout.emit()"
             variant="ghost" 
             size="sm"
-            (clicked)="toggleSidebar.emit()"
-            class="p-1 h-8 w-8"
+            class="w-full text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-white/10"
           >
-            <lucide-icon [name]="ChevronLeft" [size]="16"></lucide-icon>
+            <lucide-icon [name]="LogOut" [size]="16" class="mr-2"></lucide-icon>
+            Logout
           </ui-button>
         </div>
-        
-        <!-- User info -->
-        <div class="p-4 border-b border-sidebar-border/30">
-          <div class="flex items-center space-x-3">
-            <ui-avatar size="md" class="flex-shrink-0">
-              <div class="w-full h-full rounded-full bg-primary/10 flex items-center justify-center">
-                <lucide-icon [name]="Users" [size]="20" class="text-primary"></lucide-icon>
-              </div>
-            </ui-avatar>
-            <div class="min-w-0 flex-1">
-              <p class="font-medium text-sm truncate">{{ currentUser?.name || 'User' }}</p>
-              <p class="text-xs text-sidebar-foreground/70 truncate">{{ currentUser?.id || 'user@example.com' }}</p>
-              <ui-badge variant="secondary" class="mt-1 text-xs">
-                {{ getRoleDisplayName(currentUser?.id) }}
-              </ui-badge>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Navigation -->
-        <div class="flex-1 overflow-y-auto p-2">
-          <nav class="space-y-1">
-            <ng-container *ngFor="let item of getVisibleNavigationItems(); trackBy: trackByItemId">
-              
-              <!-- Simple navigation item -->
-              <div *ngIf="!item.children" 
-                   class="group relative">
-                <ui-button
-                  variant="ghost"
-                  size="sm"
-                  [class]="getNavItemClasses(item.id)"
-                  (clicked)="navigate.emit(item.id)"
-                  class="w-full justify-start px-3 py-2 h-auto"
-                >
-                  <lucide-icon [name]="item.icon" [size]="16" class="mr-3 flex-shrink-0"></lucide-icon>
-                  <span class="truncate">{{ item.title }}</span>
-                  <ui-badge *ngIf="item.badge" variant="secondary" class="ml-auto text-xs">
-                    {{ item.badge }}
-                  </ui-badge>
-                </ui-button>
-              </div>
-              
-              <!-- Collapsible navigation item with children -->
-              <ui-collapsible *ngIf="item.children" class="space-y-1">
-                <ui-button
-                  variant="ghost"
-                  size="sm"
-                  class="w-full justify-start px-3 py-2 h-auto"
-                  [class]="getNavItemClasses(item.id)"
-                >
-                  <lucide-icon [name]="item.icon" [size]="16" class="mr-3 flex-shrink-0"></lucide-icon>
-                  <span class="truncate">{{ item.title }}</span>
-                  <lucide-icon [name]="ChevronRight" [size]="16" class="ml-auto transition-transform group-data-[state=open]:rotate-90"></lucide-icon>
-                </ui-button>
-                
-                <div class="ml-6 space-y-1">
-                  <ui-button
-                    *ngFor="let child of item.children"
-                    variant="ghost"
-                    size="sm"
-                    [class]="getNavItemClasses(child.id)"
-                    (clicked)="navigate.emit(child.id)"
-                    class="w-full justify-start px-3 py-1 h-auto text-sm"
-                  >
-                    <lucide-icon [name]="child.icon" [size]="12" class="mr-3 flex-shrink-0"></lucide-icon>
-                    <span class="truncate">{{ child.title }}</span>
-                  </ui-button>
-                </div>
-              </ui-collapsible>
-              
-            </ng-container>
-          </nav>
-        </div>
-        
-        <!-- Footer -->
-        <div class="p-4 border-t border-sidebar-border/30">
-          <div class="flex items-center justify-between text-xs text-sidebar-foreground/70">
-            <span>MLF v1.0.0</span>
-            <ui-button variant="ghost" size="sm" class="p-1 h-6 w-6">
-              <lucide-icon [name]="Settings2" [size]="12"></lucide-icon>
-            </ui-button>
-          </div>
-        </div>
-        
-      </div>
-      
-      <!-- Collapsed sidebar -->
-      <div *ngIf="isCollapsed" class="w-16 h-full bg-sidebar border-r border-sidebar-border/30 flex flex-col items-center py-4">
-        <ui-button 
-          variant="ghost" 
-          size="sm"
-          (clicked)="toggleSidebar.emit()"
-          class="p-2 h-10 w-10 mb-4"
-        >
-          <lucide-icon [name]="ChevronRight" [size]="16"></lucide-icon>
-        </ui-button>
-        
-        <div class="space-y-2">
-          <ui-tooltip *ngFor="let item of getVisibleNavigationItems()" [content]="item.title">
-            <ui-button
-              variant="ghost"
-              size="sm"
-              [class]="getNavItemClasses(item.id)"
-              (clicked)="navigate.emit(item.id)"
-              class="p-2 h-10 w-10"
-            >
-              <lucide-icon [name]="item.icon" [size]="16"></lucide-icon>
-            </ui-button>
-          </ui-tooltip>
+        <div class="text-center">
+          <p class="text-sidebar-foreground/50 text-xs">
+            MLF v2.1
+          </p>
         </div>
       </div>
-      
     </div>
   `
 })
 export class SidebarComponent {
-  @Input() isCollapsed = false;
   @Input() activeItem = 'home';
   @Input() currentUser: UserRole | null = null;
   
-  @Output() toggleSidebar = new EventEmitter<void>();
   @Output() navigate = new EventEmitter<string>();
+  @Output() onLogout = new EventEmitter<void>();
+  
+  // Expanded items state
+  expandedItems = signal(new Set(['mlf-configuration', 'reports']));
   
   // Icons
   Home = Home;
   BarChart3 = BarChart3;
   Database = Database;
   Settings = Settings;
+  Settings2 = Settings2;
   FileText = FileText;
-  CheckSquare = CheckSquare;
-  BookOpen = BookOpen;
-  PieChart = PieChart;
+  CheckCircle2 = CheckCircle2;
   Users = Users;
   ChevronLeft = ChevronLeft;
   ChevronRight = ChevronRight;
-  Settings2 = Settings2;
+  ChevronDown = ChevronDown;
+  LogOut = LogOut;
   
   navigationItems: NavigationItem[] = [
     {
       id: 'home',
-      title: 'Dashboard',
-      icon: Home,
-      permissions: ['home']
-    },
-    {
-      id: 'monthly-forecast',
-      title: 'Monthly Forecast',
-      icon: FileText,
-      permissions: ['monthly-forecast']
-    },
-    {
-      id: 'master-data-configurations',
-      title: 'Master Data',
-      icon: Database,
-      permissions: ['master-data-configurations']
-    },
-    {
-      id: 'project-configurations',
-      title: 'Project Setup',
-      icon: Settings,
-      permissions: ['project-configurations']
-    },
-    {
-      id: 'manage-mlf-rules',
-      title: 'MLF Rules',
-      icon: BookOpen,
-      permissions: ['manage-mlf-rules']
+      label: 'MLF Dashboard',
+      icon: Home
     },
     {
       id: 'forecast-approvals',
-      title: 'Approvals',
-      icon: CheckSquare,
-      permissions: ['forecast-approvals'],
-      badge: '8'
+      label: 'Forecast Approvals',
+      icon: CheckCircle2
     },
     {
-      id: 'mlf-variance-report',
-      title: 'Variance Report',
-      icon: BarChart3,
-      permissions: ['mlf-variance-report']
+      id: 'mlf-configuration',
+      label: 'MLF Configuration',
+      icon: Settings,
+      subItems: [
+        { id: 'master-data-configurations', label: 'Master Data Configurations' },
+        { id: 'project-configurations', label: 'Project Setup & Config' }
+      ]
     },
     {
-      id: 'power-bi-reports',
-      title: 'Power BI Reports',
-      icon: PieChart,
-      permissions: ['power-bi-reports']
+      id: 'manage-mlf-rules',
+      label: 'Manage MLF Rules',
+      icon: Settings2
+    },
+    {
+      id: 'reports',
+      label: 'MLF Toolkit & Reports',
+      icon: FileText,
+      subItems: [
+        { id: 'monthly-forecast', label: 'Monthly Forecast' },
+        { id: 'mlf-variance-report', label: 'MLF Variance Report' },
+        { id: 'power-bi-reports', label: 'Power BI Reports' }
+      ]
     },
     {
       id: 'user-management',
-      title: 'User Management',
-      icon: Users,
-      permissions: ['user-management']
+      label: 'User Management',
+      icon: Users
     }
   ];
   
-  roleDisplayNames: { [key: string]: string } = {
-    'super-admin': 'Super Admin',
-    'mlf-admin': 'MLF Admin',
-    'planner': 'Planner',
-    'approver': 'Approver',
-    'fab-management': 'Fab Management',
-    'view-only-user': 'View Only'
-  };
+  toggleExpanded(itemId: string): void {
+    const expanded = this.expandedItems();
+    const newSet = new Set(expanded);
+    if (newSet.has(itemId)) {
+      newSet.delete(itemId);
+    } else {
+      newSet.add(itemId);
+    }
+    this.expandedItems.set(newSet);
+  }
   
-  getVisibleNavigationItems(): NavigationItem[] {
+  isExpanded(itemId: string): boolean {
+    return this.expandedItems().has(itemId);
+  }
+  
+  handleItemClick(item: NavigationItem): void {
+    if (item.subItems) {
+      this.toggleExpanded(item.id);
+    } else {
+      this.navigate.emit(item.id);
+    }
+  }
+  
+  handleSubItemClick(subItemId: string): void {
+    this.navigate.emit(subItemId);
+  }
+  
+  getFilteredNavigationItems(): NavigationItem[] {
     if (!this.currentUser?.permissions) {
       return [];
     }
     
-    return this.navigationItems.filter(item => 
-      item.permissions.some(permission => 
-        this.currentUser?.permissions.includes(permission)
-      )
-    );
+    return this.navigationItems.filter(item => {
+      // Check if main item is allowed
+      if (this.currentUser!.permissions.includes(item.id)) return true;
+      
+      // Check if any sub-item is allowed
+      if (item.subItems) {
+        const allowedSubItems = item.subItems.filter(subItem => 
+          this.currentUser!.permissions.includes(subItem.id)
+        );
+        if (allowedSubItems.length > 0) {
+          // Create a copy with filtered sub-items
+          const filteredItem = { ...item };
+          filteredItem.subItems = allowedSubItems;
+          return true;
+        }
+      }
+      
+      return false;
+    });
   }
   
-  getNavItemClasses(itemId: string): string {
-    const baseClasses = 'transition-colors';
-    const activeClasses = 'bg-sidebar-accent text-sidebar-accent-foreground';
-    const inactiveClasses = 'hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground';
+  getMainItemClasses(itemId: string, hasSubItems = false): string {
+    const baseClasses = 'w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200';
+    const isActive = this.activeItem === itemId && !hasSubItems;
     
-    return this.activeItem === itemId 
-      ? `${baseClasses} ${activeClasses}`
-      : `${baseClasses} ${inactiveClasses}`;
+    if (isActive) {
+      return `${baseClasses} bg-white/20 text-white`;
+    } else {
+      return `${baseClasses} text-white/80 hover:bg-white/10 hover:text-white`;
+    }
   }
   
-  getRoleDisplayName(roleId?: string): string {
-    return roleId ? this.roleDisplayNames[roleId] || roleId : 'User';
+  getSubItemClasses(subItemId: string): string {
+    const baseClasses = 'w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm';
+    const isActive = this.activeItem === subItemId;
+    
+    if (isActive) {
+      return `${baseClasses} bg-white/20 text-white`;
+    } else {
+      return `${baseClasses} text-white/70 hover:bg-white/10 hover:text-white`;
+    }
   }
   
   trackByItemId(index: number, item: NavigationItem): string {
