@@ -135,6 +135,7 @@ interface NavigationItem {
 export class SidebarComponent {
   @Input() activeItem = 'home';
   @Input() currentUser: UserRole | null = null;
+  @Input() collapsed = false;
   
   @Output() navigate = new EventEmitter<string>();
   @Output() onLogout = new EventEmitter<void>();
