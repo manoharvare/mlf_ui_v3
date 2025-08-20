@@ -34,13 +34,15 @@ import { UserManagementComponent } from '../pages/user-management.component';
   ],
   template: `
     <div class="flex h-screen bg-background">
-      <!-- Sidebar -->
-      <app-sidebar
-        [activeItem]="activeItem()"
-        [currentUser]="currentUser()"
-        (navigate)="handleNavigate($event)"
-        (onLogout)="handleLogout()"
-      ></app-sidebar>
+      <!-- Sidebar wrapper with conditional width (React pattern) -->
+      <div [class]="getSidebarWrapperClasses()" class="h-full transition-all duration-300 ease-in-out overflow-hidden flex-shrink-0">
+        <app-sidebar
+          [activeItem]="activeItem()"
+          [currentUser]="currentUser()"
+          (navigate)="handleNavigate($event)"
+          (onLogout)="handleLogout()"
+        ></app-sidebar>
+      </div>
       
       <!-- Main content area -->
       <div class="flex-1 flex flex-col overflow-hidden">
@@ -50,6 +52,9 @@ import { UserManagementComponent } from '../pages/user-management.component';
           [subtitle]="getCurrentPageSubtitle()"
           [currentUser]="currentUser()"
           [availableRoles]="availableRoles()"
+          [showSidebarToggle]="true"
+          [isSidebarCollapsed]="isSidebarCollapsed()"
+          (toggleSidebar)="toggleSidebar()"
           (roleChange)="handleRoleChange($event)"
         ></app-header>
         
@@ -114,6 +119,7 @@ export class MlfApplicationComponent implements OnInit {
   activeItem = signal<string>('home');
   currentUser = signal<UserRole | null>(null);
   availableRoles = signal<UserRole[]>([]);
+  sidebarCollapsed = signal<boolean>(false);
   
   // Page configuration
   pageConfig: { [key: string]: { title: string; subtitle: string } } = {
@@ -187,6 +193,18 @@ export class MlfApplicationComponent implements OnInit {
   
   handleNavigate(page: string): void {
     this.activeItem.set(page);
+  }
+  
+  toggleSidebar(): void {
+    this.sidebarCollapsed.update(collapsed => !collapsed);
+  }
+  
+  isSidebarCollapsed(): boolean {
+    return this.sidebarCollapsed();
+  }
+  
+  getSidebarWrapperClasses(): string {
+    return this.sidebarCollapsed() ? 'w-0' : 'w-80';
   }
   
   handleLogout(): void {

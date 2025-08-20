@@ -46,65 +46,70 @@ import { UserRole } from '../../models/user-role.model';
           <div *ngIf="currentUser && availableRoles && availableRoles.length > 0" class="relative">
             <button
               (click)="toggleDropdown()"
-              class="flex items-center gap-2 hover:bg-gray-50 rounded-md px-2 py-1 cursor-pointer transition-colors"
+              class="flex items-center gap-2 hover:bg-muted rounded-md px-2 py-1 cursor-pointer transition-colors"
             >
-              <div class="w-6 h-6 bg-[#D9DBE9] rounded-full flex items-center justify-center">
+              <div class="w-6 h-6 rounded-full flex items-center justify-center" style="background-color: #D9DBE9;">
                 <span 
-                  class="text-black text-xs font-medium"
-                  style="font-family: Roboto, sans-serif"
+                  class="text-xs font-medium"
+                  style="color: #000000; font-family: 'Roboto', sans-serif;"
                 >
                   {{ getUserInitials() }}
                 </span>
               </div>
               <div class="flex flex-col items-start">
                 <span 
-                  class="text-gray-700 text-xs leading-tight"
-                  style="font-family: Roboto, sans-serif"
+                  class="text-xs leading-tight"
+                  style="color: #374151; font-family: 'Roboto', sans-serif;"
                 >
                   {{ currentUser.name }}
                 </span>
                 <span 
                   *ngIf="currentUser.isReadOnly"
-                  class="text-orange-600 text-[10px] leading-tight"
-                  style="font-family: Roboto, sans-serif"
+                  class="leading-tight"
+                  style="color: #ea580c; font-size: 10px; font-family: 'Roboto', sans-serif;"
                 >
                   Read-Only
                 </span>
               </div>
-              <lucide-icon [name]="ChevronDown" [size]="12" class="text-gray-500"></lucide-icon>
+              <lucide-icon [name]="ChevronDown" [size]="12" style="color: #6b7280;"></lucide-icon>
             </button>
             
             <!-- Dropdown content -->
             <div 
               *ngIf="isDropdownOpen()"
-              class="absolute right-0 top-full mt-1 w-64 bg-white border border-border rounded-md shadow-md z-50"
+              class="absolute right-0 top-full mt-1 w-64 rounded-md shadow-lg z-50"
+              style="background-color: white; border: 1px solid #e5e7eb;"
             >
-              <div class="text-sm font-medium p-3 border-b">Switch Role</div>
+              <div class="text-sm font-medium p-3" style="border-bottom: 1px solid #e5e7eb; color: #111827;">
+                Switch Role
+              </div>
               <div class="py-1">
                 <button
                   *ngFor="let role of availableRoles"
                   (click)="onRoleChange(role)"
-                  class="flex items-center gap-3 p-3 cursor-pointer w-full hover:bg-gray-50 transition-colors text-left"
+                  class="flex items-center gap-3 p-3 cursor-pointer w-full transition-colors text-left dropdown-item"
+                  style="border: none; background: none;"
                 >
-                  <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 text-gray-600">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background-color: #f3f4f6; color: #4b5563;">
                     <lucide-icon [name]="role.icon || 'User'" [size]="16"></lucide-icon>
                   </div>
                   <div class="flex-1">
                     <div class="flex items-center gap-2">
-                      <span class="font-medium text-sm">{{ role.name }}</span>
+                      <span class="font-medium text-sm" style="color: #111827;">{{ role.name }}</span>
                       <lucide-icon 
                         *ngIf="isSelectedRole(role)" 
                         [name]="Check" 
                         [size]="16" 
-                        class="text-green-600"
+                        style="color: #16a34a;"
                       ></lucide-icon>
                     </div>
-                    <p class="text-xs text-gray-500 line-clamp-2">
+                    <p class="text-xs line-clamp-2" style="color: #6b7280;">
                       {{ role.description }}
                     </p>
                     <span 
                       *ngIf="role.isReadOnly" 
-                      class="text-xs text-orange-600 font-medium"
+                      class="text-xs font-medium"
+                      style="color: #ea580c;"
                     >
                       Read-Only Access
                     </span>

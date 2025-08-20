@@ -49,14 +49,14 @@ interface NavigationItem {
     CollapsibleComponent
   ],
   template: `
-    <div class="w-80 min-w-80 h-full bg-gradient-to-b from-sidebar to-sidebar/95 border-r sidebar-border flex flex-col">
+    <div [class]="getSidebarClasses()" class="h-full bg-gradient-to-b from-sidebar to-sidebar/95 border-r sidebar-border flex flex-col transition-all duration-300">
       <!-- Header -->
       <div class="p-6 border-b sidebar-border">
         <div class="flex items-center gap-3">
           <div class="p-2 bg-sidebar-primary rounded-lg">
             <lucide-icon [name]="BarChart3" [size]="24" class="text-sidebar-primary-foreground"></lucide-icon>
           </div>
-          <div>
+          <div *ngIf="!collapsed">
             <h1 class="text-sidebar-foreground text-lg font-semibold">MLF</h1>
             <p class="text-sidebar-foreground/70 text-sm">
               Monthly Labor Forecast
@@ -75,11 +75,11 @@ interface NavigationItem {
               [class]="getMainItemClasses(item.id)"
             >
               <lucide-icon [name]="item.icon" [size]="18"></lucide-icon>
-              <span class="flex-1 text-left">{{ item.label }}</span>
+              <span *ngIf="!collapsed" class="flex-1 text-left">{{ item.label }}</span>
             </button>
             
             <!-- Item with sub-items -->
-            <div *ngIf="item.subItems">
+            <div *ngIf="item.subItems && !collapsed">
               <button
                 (click)="toggleExpanded(item.id)"
                 [class]="getMainItemClasses(item.id, true)"
@@ -223,6 +223,12 @@ export class SidebarComponent {
   
   handleSubItemClick(subItemId: string): void {
     this.navigate.emit(subItemId);
+  }
+  
+  getSidebarClasses(): string {
+    return this.collapsed 
+      ? 'w-16 min-w-16' 
+      : 'w-80 min-w-80';
   }
   
   getFilteredNavigationItems(): NavigationItem[] {

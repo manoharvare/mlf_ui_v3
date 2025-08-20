@@ -230,6 +230,11 @@ body {
   --header-foreground: hsl(var(--color-header-foreground));
 }
 
+/* Header dropdown styles */
+.dropdown-item:hover {
+  background-color: #f9fafb !important;
+}
+
 /* Animation utility classes */
 .animate-in {
   animation-fill-mode: both;
