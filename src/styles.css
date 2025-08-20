@@ -47,6 +47,10 @@
   --color-sidebar-accent-foreground: 0 0% 100%;
   --color-sidebar-border: 224 76% 48%;
   --color-sidebar-ring: 217 91% 60%;
+  
+  /* Header colors - matching React implementation */
+  --color-header-background: 0 0% 100%;
+  --color-header-foreground: 220 13% 18%;
 
   /* Container configuration */
   --container-padding: 2rem;
@@ -198,11 +202,32 @@ body {
   .hover\:bg-white\/10:hover { background-color: rgb(255 255 255 / 0.1); }
   .hover\:text-white:hover { color: rgb(255 255 255); }
   .hover\:text-sidebar-foreground:hover { color: hsl(var(--color-sidebar-foreground)); }
+  
+  /* Additional utilities for header dropdown */
+  .hover\:bg-gray-50:hover { background-color: rgb(249 250 251); }
+  .text-gray-700 { color: rgb(55 65 81); }
+  .text-gray-500 { color: rgb(107 114 128); }
+  .text-gray-600 { color: rgb(75 85 99); }
+  .bg-gray-100 { background-color: rgb(243 244 246); }
+  .text-green-600 { color: rgb(22 163 74); }
+  .text-orange-600 { color: rgb(234 88 12); }
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
 }
 
 /* Custom sidebar border color mixing - matching React implementation */
 .sidebar-border {
   border-color: color-mix(in oklab, hsl(var(--color-sidebar-border)) 30%, transparent);
+}
+
+/* Header CSS custom properties */
+:root {
+  --header-background: hsl(var(--color-header-background));
+  --header-foreground: hsl(var(--color-header-foreground));
 }
 
 /* Animation utility classes */

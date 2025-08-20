@@ -46,16 +46,10 @@ import { UserManagementComponent } from '../pages/user-management.component';
       <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Header -->
         <app-header
-          [pageTitle]="getCurrentPageTitle()"
-          [pageSubtitle]="getCurrentPageSubtitle()"
+          [title]="getCurrentPageTitle()"
+          [subtitle]="getCurrentPageSubtitle()"
           [currentUser]="currentUser()"
           [availableRoles]="availableRoles()"
-          [notificationCount]="8"
-          (search)="handleSearch($event)"
-          (quickAction)="handleQuickAction($event)"
-          (notifications)="handleNotifications()"
-          (help)="handleHelp()"
-          (userAction)="handleUserAction($event)"
           (roleChange)="handleRoleChange($event)"
         ></app-header>
         
@@ -198,35 +192,6 @@ export class MlfApplicationComponent implements OnInit {
   handleLogout(): void {
     this.userRoleService.clearCurrentUserRole();
     this.router.navigate(['/login']);
-  }
-  
-  handleSearch(query: string): void {
-    console.log('Search:', query);
-    // Implement search functionality
-  }
-  
-  handleQuickAction(action: string): void {
-    console.log('Quick action:', action);
-    // Implement quick actions
-  }
-  
-  handleNotifications(): void {
-    console.log('Show notifications');
-    // Implement notifications
-  }
-  
-  handleHelp(): void {
-    console.log('Show help');
-    // Implement help functionality
-  }
-  
-  handleUserAction(action: string): void {
-    console.log('User action:', action);
-    if (action === 'logout') {
-      this.userRoleService.clearCurrentUserRole();
-      this.router.navigate(['/login']);
-    }
-    // Implement other user actions
   }
   
   handleRoleChange(role: UserRole): void {

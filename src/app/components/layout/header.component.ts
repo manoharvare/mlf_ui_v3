@@ -1,26 +1,12 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { 
   LucideAngularModule,
   Menu,
-  Plus,
-  Upload,
-  Download,
-  Search,
-  Bell,
-  Settings,
-  User,
-  LogOut,
+  PanelLeftClose,
   ChevronDown,
-  HelpCircle,
-  LucideIconData
+  Check
 } from 'lucide-angular';
-import { ButtonComponent } from '../ui/button.component';
-import { InputComponent } from '../ui/input.component';
-import { DropdownComponent } from '../ui/dropdown.component';
-import { AvatarComponent } from '../ui/avatar.component';
-import { BadgeComponent } from '../ui/badge.component';
-import { SeparatorComponent } from '../ui/separator.component';
 import { UserRole } from '../../models/user-role.model';
 
 @Component({
@@ -28,238 +14,164 @@ import { UserRole } from '../../models/user-role.model';
   standalone: true,
   imports: [
     CommonModule,
-    LucideAngularModule,
-    ButtonComponent,
-    InputComponent,
-    DropdownComponent,
-    AvatarComponent,
-    BadgeComponent,
-    SeparatorComponent
+    LucideAngularModule
   ],
   template: `
-    <header class="h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div class="flex items-center justify-between px-4 h-full">
-        
-        <!-- Left section -->
-        <div class="flex items-center space-x-4">
-          <!-- Sidebar toggle -->
-          <ui-button 
-            variant="ghost" 
-            size="sm"
-            (clicked)="toggleSidebar.emit()"
-            class="p-2"
+    <div class="bg-white border-b border-border px-8 py-6" 
+         [style.background-color]="'var(--header-background)'"
+         [style.color]="'var(--header-foreground)'">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <!-- Sidebar toggle (only show if onToggleSidebar is provided) -->
+          <button
+            *ngIf="showSidebarToggle"
+            (click)="toggleSidebar.emit()"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors hover:bg-muted/50 h-8 px-3"
           >
-            <lucide-icon [name]="Menu" [size]="20"></lucide-icon>
-            <span class="sr-only">Toggle sidebar</span>
-          </ui-button>
+            <lucide-icon 
+              [name]="isSidebarCollapsed ? Menu : PanelLeftClose" 
+              [size]="20"
+            ></lucide-icon>
+          </button>
           
-          <!-- Page title -->
-          <div class="hidden sm:block">
-            <h1 class="text-lg font-semibold text-foreground">{{ pageTitle }}</h1>
-            <p *ngIf="pageSubtitle" class="text-sm text-muted-foreground">{{ pageSubtitle }}</p>
+          <div>
+            <h1 [style.color]="'var(--header-foreground)'">{{ title }}</h1>
+            <p *ngIf="subtitle" class="text-muted-foreground mt-1">{{ subtitle }}</p>
           </div>
         </div>
-        
-        <!-- Center section - Search (hidden on mobile) -->
-        <div class="hidden md:flex flex-1 max-w-md mx-8">
-          <ui-input
-            placeholder="Search..."
-            [leftIcon]="Search"
-            class="w-full"
-            (valueChange)="search.emit($event)"
-          >
-          </ui-input>
-        </div>
-        
-        <!-- Right section -->
-        <div class="flex items-center space-x-2">
-          
-          <!-- Quick actions -->
-          <div class="hidden sm:flex items-center space-x-1">
-            <ui-button 
-              variant="ghost" 
-              size="sm"
-              (clicked)="quickAction.emit('add')"
-              class="p-2"
+
+        <!-- Right side - User Role Dropdown -->
+        <div class="flex items-center gap-3">
+          <!-- User Role Dropdown -->
+          <div *ngIf="currentUser && availableRoles && availableRoles.length > 0" class="relative">
+            <button
+              (click)="toggleDropdown()"
+              class="flex items-center gap-2 hover:bg-gray-50 rounded-md px-2 py-1 cursor-pointer transition-colors"
             >
-              <lucide-icon [name]="Plus" [size]="16"></lucide-icon>
-              <span class="sr-only">Add new</span>
-            </ui-button>
-            
-            <ui-button 
-              variant="ghost" 
-              size="sm"
-              (clicked)="quickAction.emit('upload')"
-              class="p-2"
-            >
-              <lucide-icon [name]="Upload" [size]="16"></lucide-icon>
-              <span class="sr-only">Upload</span>
-            </ui-button>
-            
-            <ui-button 
-              variant="ghost" 
-              size="sm"
-              (clicked)="quickAction.emit('download')"
-              class="p-2"
-            >
-              <lucide-icon [name]="Download" [size]="16"></lucide-icon>
-              <span class="sr-only">Download</span>
-            </ui-button>
-          </div>
-          
-          <ui-separator orientation="vertical" class="h-6 hidden sm:block"></ui-separator>
-          
-          <!-- Notifications -->
-          <ui-button 
-            variant="ghost" 
-            size="sm"
-            (clicked)="notifications.emit()"
-            class="p-2 relative"
-          >
-            <lucide-icon [name]="Bell" [size]="16"></lucide-icon>
-            <ui-badge 
-              *ngIf="notificationCount > 0"
-              variant="destructive" 
-              class="absolute -top-1 -right-1 h-5 w-5 text-xs p-0 flex items-center justify-center"
-            >
-              {{ notificationCount > 99 ? '99+' : notificationCount }}
-            </ui-badge>
-            <span class="sr-only">Notifications</span>
-          </ui-button>
-          
-          <!-- Help -->
-          <ui-button 
-            variant="ghost" 
-            size="sm"
-            (clicked)="help.emit()"
-            class="p-2"
-          >
-            <lucide-icon [name]="HelpCircle" [size]="16"></lucide-icon>
-            <span class="sr-only">Help</span>
-          </ui-button>
-          
-          <!-- User menu -->
-          <ui-dropdown>
-            <ui-button 
-              variant="ghost" 
-              size="sm"
-              class="flex items-center space-x-2 px-2 py-1"
-            >
-              <ui-avatar size="sm">
-                <div class="w-full h-full rounded-full bg-primary/10 flex items-center justify-center">
-                  <lucide-icon [name]="User" [size]="16" class="text-primary"></lucide-icon>
-                </div>
-              </ui-avatar>
-              <div class="hidden sm:block text-left">
-                <p class="text-sm font-medium">{{ currentUser?.name || 'User' }}</p>
-                <p class="text-xs text-muted-foreground">{{ getRoleDisplayName() }}</p>
+              <div class="w-6 h-6 bg-[#D9DBE9] rounded-full flex items-center justify-center">
+                <span 
+                  class="text-black text-xs font-medium"
+                  style="font-family: Roboto, sans-serif"
+                >
+                  {{ getUserInitials() }}
+                </span>
               </div>
-              <lucide-icon [name]="ChevronDown" [size]="16" class="text-muted-foreground"></lucide-icon>
-            </ui-button>
+              <div class="flex flex-col items-start">
+                <span 
+                  class="text-gray-700 text-xs leading-tight"
+                  style="font-family: Roboto, sans-serif"
+                >
+                  {{ currentUser.name }}
+                </span>
+                <span 
+                  *ngIf="currentUser.isReadOnly"
+                  class="text-orange-600 text-[10px] leading-tight"
+                  style="font-family: Roboto, sans-serif"
+                >
+                  Read-Only
+                </span>
+              </div>
+              <lucide-icon [name]="ChevronDown" [size]="12" class="text-gray-500"></lucide-icon>
+            </button>
             
             <!-- Dropdown content -->
-            <div slot="content" class="w-56">
-              <div class="px-3 py-2 border-b">
-                <p class="text-sm font-medium">{{ currentUser?.name || 'User' }}</p>
-                <p class="text-xs text-muted-foreground">{{ currentUser?.id || 'user@example.com' }}</p>
-              </div>
-              
+            <div 
+              *ngIf="isDropdownOpen()"
+              class="absolute right-0 top-full mt-1 w-64 bg-white border border-border rounded-md shadow-md z-50"
+            >
+              <div class="text-sm font-medium p-3 border-b">Switch Role</div>
               <div class="py-1">
-                <button 
-                  class="flex items-center w-full px-3 py-2 text-sm hover:bg-muted"
-                  (click)="userAction.emit('profile')"
+                <button
+                  *ngFor="let role of availableRoles"
+                  (click)="onRoleChange(role)"
+                  class="flex items-center gap-3 p-3 cursor-pointer w-full hover:bg-gray-50 transition-colors text-left"
                 >
-                  <lucide-icon [name]="User" [size]="16" class="mr-3"></lucide-icon>
-                  Profile
-                </button>
-                
-                <button 
-                  class="flex items-center w-full px-3 py-2 text-sm hover:bg-muted"
-                  (click)="userAction.emit('settings')"
-                >
-                  <lucide-icon [name]="Settings" [size]="16" class="mr-3"></lucide-icon>
-                  Settings
-                </button>
-                
-                <div class="border-t my-1"></div>
-                
-                <!-- Role switcher -->
-                <div *ngIf="availableRoles && availableRoles.length > 1" class="px-3 py-2">
-                  <p class="text-xs font-medium text-muted-foreground mb-2">Switch Role</p>
-                  <div class="space-y-1">
-                    <button
-                      *ngFor="let role of availableRoles"
-                      class="flex items-center w-full px-2 py-1 text-sm rounded hover:bg-muted"
-                      [class.bg-muted]="currentUser?.id === role.id"
-                      (click)="roleChange.emit(role)"
-                    >
-                      <div class="w-2 h-2 rounded-full mr-2"
-                           [class.bg-primary]="currentUser?.id === role.id"
-                           [class.bg-muted-foreground]="currentUser?.id !== role.id">
-                      </div>
-                      {{ role.name }}
-                    </button>
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 text-gray-600">
+                    <lucide-icon [name]="role.icon || 'User'" [size]="16"></lucide-icon>
                   </div>
-                </div>
-                
-                <div class="border-t my-1"></div>
-                
-                <button 
-                  class="flex items-center w-full px-3 py-2 text-sm text-destructive hover:bg-destructive/10"
-                  (click)="userAction.emit('logout')"
-                >
-                  <lucide-icon [name]="LogOut" [size]="16" class="mr-3"></lucide-icon>
-                  Sign out
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                      <span class="font-medium text-sm">{{ role.name }}</span>
+                      <lucide-icon 
+                        *ngIf="isSelectedRole(role)" 
+                        [name]="Check" 
+                        [size]="16" 
+                        class="text-green-600"
+                      ></lucide-icon>
+                    </div>
+                    <p class="text-xs text-gray-500 line-clamp-2">
+                      {{ role.description }}
+                    </p>
+                    <span 
+                      *ngIf="role.isReadOnly" 
+                      class="text-xs text-orange-600 font-medium"
+                    >
+                      Read-Only Access
+                    </span>
+                  </div>
                 </button>
               </div>
             </div>
-          </ui-dropdown>
-          
+          </div>
         </div>
       </div>
-    </header>
+    </div>
+    
+    <!-- Backdrop to close dropdown -->
+    <div 
+      *ngIf="isDropdownOpen()"
+      class="fixed inset-0 z-40"
+      (click)="closeDropdown()"
+    ></div>
   `
 })
 export class HeaderComponent {
-  @Input() pageTitle = '';
-  @Input() pageSubtitle = '';
+  @Input() title = '';
+  @Input() subtitle = '';
   @Input() currentUser: UserRole | null = null;
   @Input() availableRoles: UserRole[] = [];
-  @Input() notificationCount = 0;
+  @Input() isSidebarCollapsed = false;
+  @Input() showSidebarToggle = false;
   
   @Output() toggleSidebar = new EventEmitter<void>();
-  @Output() search = new EventEmitter<string>();
-  @Output() quickAction = new EventEmitter<string>();
-  @Output() notifications = new EventEmitter<void>();
-  @Output() help = new EventEmitter<void>();
-  @Output() userAction = new EventEmitter<string>();
   @Output() roleChange = new EventEmitter<UserRole>();
+  
+  // Dropdown state
+  dropdownOpen = signal(false);
   
   // Icons
   Menu = Menu;
-  Plus = Plus;
-  Upload = Upload;
-  Download = Download;
-  Search = Search;
-  Bell = Bell;
-  Settings = Settings;
-  User = User;
-  LogOut = LogOut;
+  PanelLeftClose = PanelLeftClose;
   ChevronDown = ChevronDown;
-  HelpCircle = HelpCircle;
+  Check = Check;
   
-  roleDisplayNames: { [key: string]: string } = {
-    'super-admin': 'Super Admin',
-    'mlf-admin': 'MLF Admin',
-    'planner': 'Planner',
-    'approver': 'Approver',
-    'fab-management': 'Fab Management',
-    'view-only-user': 'View Only'
-  };
+  getUserInitials(): string {
+    if (!this.currentUser?.name) return 'U';
+    return this.currentUser.name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
+  }
   
-  getRoleDisplayName(): string {
-    return this.currentUser?.id 
-      ? this.roleDisplayNames[this.currentUser.id] || this.currentUser.id 
-      : 'User';
+  isSelectedRole(role: UserRole): boolean {
+    return this.currentUser?.id === role.id;
+  }
+  
+  onRoleChange(role: UserRole): void {
+    this.roleChange.emit(role);
+    this.closeDropdown();
+  }
+  
+  toggleDropdown(): void {
+    this.dropdownOpen.update(open => !open);
+  }
+  
+  closeDropdown(): void {
+    this.dropdownOpen.set(false);
+  }
+  
+  isDropdownOpen(): boolean {
+    return this.dropdownOpen();
   }
 }
